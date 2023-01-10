@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "80928081379",
+    "project_id": "enerlyticsw",
+    "storage_bucket": "enerlyticsw.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80928081379:android:d3fdd6bed973cbacac8cd6",
+        "android_client_info": {
+          "package_name": "com.enerlytics.wateen.wateen_energy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80928081379-7sj4ml0og75mciojp0etcu7dil6rcdfr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSL6NRMHkFEz4c0rB5Puk2V0J-yMCCEuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "80928081379-7sj4ml0og75mciojp0etcu7dil6rcdfr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
