@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:wateen_energy/utils/strings.dart';
+import 'package:wateen_energy/widgets/P_chart_label.dart';
 import '../models/testenergy.dart';
 import '../widgets/alert_button.dart';
 import '../widgets/chart_label.dart';
@@ -31,6 +32,13 @@ class Utility {
     return ((maxY ~/ 8)*10);
   }
 
+  static double getMaxXAxisValue(List<CityData> chartData)
+  {
+
+      return chartData.fold<int>(0, (max, e) => e.y > max ? e.y : max).toDouble() ;
+
+  }
+
   static int getInterval(double val)
   {
     val = 45;
@@ -47,7 +55,7 @@ class Utility {
     return interval;
   }
 
-  static Widget getChartLabels(List<dynamic> labels)
+  static Widget getChartLabels(List<dynamic> labels, bool isEnergy)
   {
     return Container(
       constraints: BoxConstraints(minWidth: double.infinity, maxHeight: 7.h),
@@ -56,7 +64,8 @@ class Utility {
         padding: EdgeInsets.zero,
         itemCount: labels.length,
         itemBuilder: (context, index) {
-          return ChartLabel(labels[index],index);
+          return
+          isEnergy ?  PChartLabel(labels[index],index) :  ChartLabel(labels[index],index);
         },
       ),
     );

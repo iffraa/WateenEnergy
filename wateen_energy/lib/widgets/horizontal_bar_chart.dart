@@ -66,11 +66,12 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
                tooltipBehavior: _tooltipBehavior,
             enableAxisAnimation: true,
             zoomPanBehavior: _zoomPanBehavior,
-            margin: EdgeInsets.only(top: 2.h),
+            margin: EdgeInsets.only(top: 2.h,left: 6.h),
 
             primaryYAxis:
-                NumericAxis(desiredIntervals: 4, minimum: 0, maximum: 100),
-            primaryXAxis: CategoryAxis(labelRotation: 360,maximumLabelWidth: 11.h ),
+                NumericAxis(desiredIntervals: 4, minimum: 0, maximum: Utility.getMaxXAxisValue(widget.chartData)),
+            primaryXAxis: CategoryAxis(labelRotation: -90,
+                ),
             series: <ChartSeries>[
               StackedBarSeries<CityData, String>(
                 name: "Performance Ratio",

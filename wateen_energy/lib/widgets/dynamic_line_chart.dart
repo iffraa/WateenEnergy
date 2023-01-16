@@ -47,7 +47,7 @@ class _DynamicLineChartState extends State<DynamicLineChart> {
       children: [
         GraphHeading("Inverter Wise Performance"),
 
-        Utility.getChartLabels(widget.labels),
+        Utility.getChartLabels(widget.labels,false),
 
         SfCartesianChart(
             margin: EdgeInsets.zero,

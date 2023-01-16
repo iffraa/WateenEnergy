@@ -28,10 +28,9 @@ class NetworkAPI {
           headers: httpHeaders);
       if (response.statusCode == 200) {
         final body = response.body;
-        bool error = hasError(body);
-        completionHandler(error, json.decode(body));
+        completionHandler(false, json.decode(body));
       } else {
-        completionHandler(false, null);
+        completionHandler(true, null);
       }
     } catch (e) {
       completionHandler(false, null);

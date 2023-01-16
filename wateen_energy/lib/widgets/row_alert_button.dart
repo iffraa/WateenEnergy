@@ -21,10 +21,10 @@ class RowAlertButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           // onPrimary: Colors.black87,
           primary: AppColors.greyText,
-          minimumSize: Size(10.h, 2.h),
+          minimumSize: Size(10.h, 4.h),
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+          shape:  RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(1.5.h)),
           ),
         ),
         onPressed: () {

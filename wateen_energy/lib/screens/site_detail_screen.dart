@@ -16,6 +16,7 @@ import '../utils/colour.dart';
 import '../utils/strings.dart';
 import '../utils/user_table.dart';
 import '../utils/utility.dart';
+import '../widgets/AnimationDemo.dart';
 import '../widgets/SiteAnimation.dart';
 import '../widgets/base_app_bar.dart';
 import '../widgets/dynamic_line_chart.dart';
@@ -142,8 +143,8 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
                           padding: EdgeInsets.all(2.h),
                           child: Column(
                             children: [
-                             // SiteAnimation(),
-                              EnergyMixChart(getEnergyMix(snapshot), getLabels(snapshot,"solar_hourly"),"Energy Mix"),
+                              SiteAnimation(),
+                           //   EnergyMixChart(getEnergyMix(snapshot), getLabels(snapshot,"solar_hourly"),"Energy Mix",siteName),
                               SizedBox(
                                 height: 5.h,
                               ),
@@ -152,7 +153,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
                                 height: 5.h,
                               ),
                              // SolarEnergyChart(getSolarHourlyData(snapshot)),
-                              EnergyMixChart(getEnergyMix(snapshot), getLabels(snapshot,"solar_hourly"),"Actual Solar VS Expected Solar"),
+                            //  EnergyMixChart(getEnergyMix(snapshot), getLabels(snapshot,"solar_hourly"),"Actual Solar VS Expected Solar",siteName),
 
                             ],
                           ),

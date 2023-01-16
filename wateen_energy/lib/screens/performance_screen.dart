@@ -128,7 +128,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                           padding: EdgeInsets.all(3.h),
                           child: Column(
                             children: [
-                              HorizontalBarChart(getCitySites(snapshot)),
+                           //   HorizontalBarChart(getCitySites(snapshot)),
                               SizedBox(
                                 height: 3.h,
                               ),

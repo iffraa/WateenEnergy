@@ -9,6 +9,7 @@ import 'package:wateen_energy/screens/filter_screen.dart';
 import 'package:wateen_energy/screens/oandm_screen.dart';
 import 'package:wateen_energy/screens/performance_screen.dart';
 import 'package:wateen_energy/screens/login_screen.dart';
+import 'package:wateen_energy/screens/reporting_screen.dart';
 import 'package:wateen_energy/screens/site_detail_screen.dart';
 import 'package:wateen_energy/screens/site_screen.dart';
 import 'package:wateen_energy/utils/alarm_list_cn.dart';
@@ -66,6 +67,8 @@ class MyApp extends StatelessWidget {
                 OnMScreen.routeName: (ctx) => OnMScreen(),
                 AlarmsScreen.routeName: (ctx) => AlarmsScreen(),
                 FilterScreen.routeName: (ctx) => FilterScreen(),
+                ReportingScreen.routeName: (ctx) => ReportingScreen(),
+
               }
           );
         }

@@ -88,9 +88,12 @@ class _VerticalBarChartState extends State<VerticalBarChart> {
             tooltipBehavior: _tooltipBehavior,
             enableAxisAnimation: true,
             margin: EdgeInsets.only(top: 2.h),
-                primaryXAxis: CategoryAxis(),
+                primaryXAxis: CategoryAxis(
+                    labelRotation: 270,
+
+                ),
             primaryYAxis:
-                NumericAxis(desiredIntervals: 4, minimum: 0, maximum: 100),
+                NumericAxis(desiredIntervals: 4, minimum: 0, maximum: 150),
             enableSideBySideSeriesPlacement: true,
             series: getSeries()),
       ],

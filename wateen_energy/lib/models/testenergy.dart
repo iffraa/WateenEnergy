@@ -8,6 +8,12 @@ class ChartDataP {
   final double y;
 }
 
+class EnergyData {
+  EnergyData(this.x, this.y);
+  final int x;
+  final double y;
+}
+
 class TestData {
   TestData(this.x,  this.y,this.y1, this.y2);
   final String x;
