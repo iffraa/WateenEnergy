@@ -1,11 +1,14 @@
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'dart:math' as math;
 
 class SiteAnimation extends StatefulWidget {
+  SiteAnimation({Key? key, required this.animation});
+  final animation;
   @override
   State<SiteAnimation> createState() => _SiteAnimationState();
 }
@@ -14,30 +17,49 @@ class _SiteAnimationState extends State<SiteAnimation>
     with SingleTickerProviderStateMixin {
   double _progress = 1.0;
   late Animation<double> animation;
-  late AnimationController controller;
+  late AnimationController _animationController;
+  Path? _path;
 
+  ui.Image? image;
   @override
   void initState() {
+    
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 5));
+    _animationController.repeat();
+    // controller =
+    //     AnimationController(duration: Duration(milliseconds: 500), vsync: this);
+
+    // animation = Tween(begin: 0.46.h, end: 7.0).animate(controller)
+    //   ..addListener(() {
+    //     setState(() {
+    //       _progress = animation.value;
+    //     });
+    //   });
+
+    // controller.forward();
+    // _path = drawPath();
+    // print(widget.animation);
+    
     super.initState();
-    controller = AnimationController(duration: Duration(milliseconds: 500), vsync: this);
+  }
 
-    animation = Tween(begin: 0.46.h, end: 7.0).animate(controller)
-      ..addListener(() {
-        setState(() {
-          _progress = animation.value;
-        });
-      });
-
-    controller.forward();
+   loadImage(String path) async {
+    final ByteData data = await rootBundle.load(path);
+    final ui.Codec codec =
+        await ui.instantiateImageCodec(data.buffer.asUint8List());
+    final ui.FrameInfo frame = await codec.getNextFrame();
+    setState(() {
+      image = frame.image;
+    });
+    return image;
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
-
-
 
   Path drawPath() {
     Size size = Size(300, 300);
@@ -50,21 +72,37 @@ class _SiteAnimationState extends State<SiteAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 40.h,
-      color: Colors.white,
-      //   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
-      child: LayoutBuilder(
-        // Inner yellow container
-        builder: (_, constraints) => Container(
-          width: MediaQuery.of(context).size.width,
-          height: 40.h,
-
-          // width: constraints.widthConstraints().maxWidth,
-          // height: constraints.heightConstraints().maxHeight,
-          color: Colors.yellow,
-          child: CustomPaint(painter: FaceOutlinePainter(controller)),
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 45.h,
+        color: Colors.white,
+        //   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+        child: FutureBuilder(
+          future: loadImage("assets/images/battery.png"),
+          builder: (BuildContext context,AsyncSnapshot snapshot) {
+            if(!snapshot.hasData){
+              return Center(child: CircularProgressIndicator(),);
+            }
+            return 
+             AnimatedBuilder(
+              // Inner yellow container
+              animation: _animationController,
+              builder: (_, constraints) => Container(
+                width: MediaQuery.of(context).size.width,
+                height: 45.h,
+    
+                // width: constraints.widthConstraints().maxWidth,
+                // height: constraints.heightConstraints().maxHeight,
+                // color: Colors.yellow,
+                color: Colors.white,
+                child: CustomPaint(
+                    painter: FaceOutlinePainter(
+                        _animationController.value, widget.animation, image)),
+              ),
+            );
+          }
         ),
       ),
     );
@@ -72,9 +110,10 @@ class _SiteAnimationState extends State<SiteAnimation>
 }
 
 class FaceOutlinePainter extends CustomPainter {
-   final AnimationController progress;
-
-  FaceOutlinePainter(this.progress);
+  double progress;
+  var animation;
+   ui.Image? image1;
+  FaceOutlinePainter(this.progress, this.animation, this.image1);
 
   Path getRightLinePath(Size size) {
     var path = Path();
@@ -88,98 +127,275 @@ class FaceOutlinePainter extends CustomPainter {
     // Define a paint object
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..color = Colors.indigo;
+      ..strokeWidth = 1.5
+      ..color = Colors.grey;
+
+       final paint1 = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5
+      ..color = Color(0xff2C4D82);
+       final circlePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..color = Color(0xff2C4D82);
+      final ceneterCirclePaint = Paint()
+      ..style = PaintingStyle.fill
+      // ..strokeWidth = 1.5
+      ..color = Color(0xff2C4D82);
+     
 
     Offset topCircleOffset =
-        Offset(size.width * 0.055.h, size.height * 0.015.h);
+        Offset(size.width * 0.06.h, size.height * 0.015.h);
     //top circle
-    canvas.drawCircle(topCircleOffset, 4.h, paint);
+    canvas.drawCircle(topCircleOffset, 4.h, circlePaint);
     drawText(
-        canvas, "0 KW", Offset(size.width * 0.052.h, size.height * 0.012.h));
-
+        canvas, "${animation["values"][0]}", Offset(size.width * 0.059.h, size.height * 0.012.h),Color(0xff2C4D82));
+        drawText(
+        canvas, "${animation["units"][0]}", Offset(size.width * 0.057.h, size.height * 0.018.h),Color(0xff2C4D82));
+    final Rect destination = Rect.fromLTWH(
+        size.width * 0.057.h, size.height * 0.005.h, 15.00, 15.00);
+    final Rect source =
+        Rect.fromLTWH(0, 0, image1!.width.toDouble()??0.00, image1!.height.toDouble());
+    canvas.drawImageRect(image1!, source, destination, Paint());
+    // canvas.drawImage(
+    //     image, Offset(size.width * 0.052.h, size.height * 0.012.h), Paint());
     //top right
     canvas.drawCircle(
-        Offset(size.width * 0.022.h, size.height * 0.055.h), 4.h, paint);
+        Offset(size.width * 0.012.h, size.height * 0.063.h), 4.h, circlePaint);
     drawText(
-        canvas, "220 KW", Offset(size.width * 0.016.h, size.height * 0.055.h));
-    drawTopToRightLine(canvas, paint, size);
-
-    drawRightToCenterLine(canvas, paint, size);
-
+        canvas, "${animation["values"][1]}", Offset(size.width * 0.009.h, size.height * 0.062.h),Color(0xff2C4D82));
+        drawText(
+        canvas, "${animation["units"][1]}", Offset(size.width * 0.009.h, size.height * 0.068.h),Color(0xff2C4D82));
+    final Rect destination2 = Rect.fromLTWH(
+        size.width * 0.009.h, size.height * 0.055.h, 15.00, 15.00);
+    final Rect source2 =
+        Rect.fromLTWH(0, 0, image1!.width.toDouble(), image1!.height.toDouble());
+    canvas.drawImageRect(image1!, source2, destination2, Paint());
+    drawTopToRightLine(canvas, paint, size,paint1);
+    drawTopToLeftLine(canvas,paint,size,paint1);
+    drawRightToCenterLine(canvas, paint, size,paint1);
+    drawTopToCenterLine(canvas, paint, size,paint1);
     //draw centre circle
     canvas.drawCircle(
-        Offset(size.width * 0.055.h, size.height * 0.055.h), 4.h, paint);
+        Offset(size.width * 0.06.h,size.height * 0.063.h), 4.h, ceneterCirclePaint);
     drawText(
-        canvas, "320 KW", Offset(size.width * 0.049.h, size.height * 0.055.h));
-
+        canvas, "${animation["values"][2]}", Offset(size.width * 0.056.h, size.height * 0.062.h),Colors.white);
+         drawText(
+        canvas, "${animation["units"][2]}", Offset(size.width * 0.057.h, size.height * 0.068.h),Colors.white);
+    final Rect destination3 = Rect.fromLTWH(
+        size.width * 0.057.h, size.height * 0.055.h, 15.00, 15.00);
+    final Rect source3 =
+        Rect.fromLTWH(0, 0, image1!.width.toDouble(), image1!.height.toDouble());
+    canvas.drawImageRect(image1!, source3, destination3, Paint());
     //bottom circle
     canvas.drawCircle(
-        Offset(size.width * 0.055.h, size.height * 0.096.h), 4.h, paint);
+        Offset(size.width * 0.06.h, size.height * 0.111.h), 4.h, circlePaint);
+
     drawText(
-        canvas, "550 KW", Offset(size.width * 0.049.h, size.height * 0.096.h));
-    drawBottomToCenterLine(canvas, paint, size);
+        canvas, "${animation["values"][3]}", Offset(size.width * 0.059.h, size.height * 0.108.h),Color(0xff2C4D82));
+        drawText(
+        canvas, "${animation["units"][3]}", Offset(size.width * 0.057.h, size.height * 0.113.h),Color(0xff2C4D82));
+    final Rect destination4 = Rect.fromLTWH(
+        size.width * 0.057.h, size.height * 0.102.h, 15.00, 15.00);
+    final Rect source4 =
+        Rect.fromLTWH(0, 0, image1!.width.toDouble(), image1!.height.toDouble());
+    canvas.drawImageRect(image1!, source4, destination4, Paint());
+    drawBottomToCenterLine(canvas, paint, size,paint1);
 
     //top left circle
     canvas.drawCircle(
-        Offset(size.width * 0.09.h, size.height * 0.055.h), 4.h, paint);
+        Offset(size.width * 0.11.h, size.height * 0.063.h), 4.h, circlePaint);
     drawText(
-        canvas, "550 KW", Offset(size.width * 0.084.h, size.height * 0.055.h));
-    drawLeftToCenterLine(canvas, paint, size);
+        canvas, "${animation["values"][4]}", Offset(size.width * 0.109.h, size.height * 0.060.h),Color(0xff2C4D82));
+        drawText(
+        canvas, "${animation["units"][4]}", Offset(size.width * 0.107.h, size.height * 0.066.h),Color(0xff2C4D82));
+    final Rect destination5 = Rect.fromLTWH(
+        size.width * 0.1077.h, size.height * 0.053.h, 15.00, 15.00);
+    final Rect source5 =
+        Rect.fromLTWH(0, 0, image1!.width.toDouble(), image1!.height.toDouble());
+    canvas.drawImageRect(image1!, source5, destination5, Paint());
+    drawLeftToCenterLine(canvas, paint, size,paint1);
+    drawLeftToBottomLine(canvas, paint, size,paint1);
+    drawRightToBottomLine(canvas, paint, size,paint1);
+    
   }
-
-  void drawTopToRightLine(Canvas canvas, Paint paint, Size size) {
-    final p1 = Offset(size.width * 0.046.h , 7.h); //8
-    final p2 = Offset(size.width * 0.026.h , 17.h); //15
-
-    //  canvas.drawLine(Offset(0.0, 0.0), Offset(size.width - size.width * _progress, size.height - size.height * _progress), _paint);
-
-progress.drive(Tween(begin: size.width * 0.046.h, end: size.width * 0.026.h ));
-progress.forward();
-
+  void drawLeftToBottomLine(Canvas canvas, Paint paint, Size size, Paint paint1){
+final p1 = Offset(size.width * 0.108.h, size.height * 0.074.h); //8
+    final p2 =Offset(size.width * 0.072.h, size.height * 0.112.h); //15
+   if (animation["genVatVal"] == 1) { //15
     canvas.drawLine(
+      p1,
+      p2,
+      paint1,
+    );}else{
+      canvas.drawLine(
       p1,
       p2,
       paint,
     );
-    drawArrow(p1, p2, paint, canvas);
-
-  }
-
-  void drawLeftToCenterLine(Canvas canvas, Paint paint, Size size) {
+    }
+    if (animation["genVatVal"] == 1) {
+      drawArrow(p1, p2, paint, canvas);
+    }
+}
+  void drawRightToBottomLine(Canvas canvas, Paint paint, Size size, Paint paint1){
+final p1 = Offset(size.width * 0.011.h, size.height * 0.074.h); //8
+    final p2 =Offset(size.width * 0.048.h, size.height * 0.112.h); //15
+     if (animation["genGridVal"] == 1) { //15
     canvas.drawLine(
-      Offset(size.width * 0.064.h, size.height * 0.056.h),
-      Offset(size.width * 0.081.h, size.height * 0.056.h),
+      p1,
+      p2,
+      paint1,
+    );}else{
+      canvas.drawLine(
+      p1,
+      p2,
       paint,
     );
-    drawArrow(Offset(size.width * 0.081.h, size.height * 0.056.h),
-    Offset(size.width * 0.064.h, size.height * 0.056.h), paint, canvas);
-  }
-
-
-  void drawRightToCenterLine(Canvas canvas, Paint paint, Size size) {
+    }
+    if (animation["genGridVal"] == 1) {
+      drawArrow(p1, p2, paint, canvas);
+    }
+}
+void drawTopToLeftLine(Canvas canvas, Paint paint, Size size, Paint paint1){
+final p1 = Offset(size.width * 0.072.h, 6.0.h); //8
+    final p2 =Offset(size.width * 0.107.h, size.height * 0.052.h);
+     if (animation["SolarBatteryVal"] == 1) { //15
     canvas.drawLine(
-      Offset(size.width * 0.031.h, size.height * 0.056.h),
-      Offset(size.width * 0.046.h, size.height * 0.056.h),
+      p1,
+      p2,
+      paint1,
+    );}else{
+      canvas.drawLine(
+      p1,
+      p2,
       paint,
     );
-    drawArrow(Offset(size.width * 0.021.h, size.height * 0.054.h),
-        Offset(size.width * 0.046.h, size.height * 0.0562.h), paint, canvas);
-  }
+    }
+    if (animation["SolarBatteryVal"] == 1) {
+      drawArrow(p1, p2, paint, canvas);
+    }
+}
+  void drawTopToRightLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
+    final p1 = Offset(size.width * 0.048.h, 6.0.h); //8
+    final p2 = Offset(size.width * 0.014.h, size.height * 0.052.h); //15
 
-  void drawBottomToCenterLine(Canvas canvas, Paint paint, Size size) {
+    //  canvas.drawLine(Offset(0.0, 0.0), Offset(size.width - size.width * _progress, size.height - size.height * _progress), _paint);
+
+    // progress
+    //     .drive(Tween(begin: size.width * 0.046.h, end: size.width * 0.026.h));
+    // progress.forward();
+ if (animation["solarGridVal"] == 1) {
     canvas.drawLine(
-      Offset(size.width * 0.055.h, size.height * 0.086.h),
-      Offset(size.width * 0.055.h, size.height * 0.065.h),
+      p1,
+      p2,
+      paint1,
+    );}else{
+      canvas.drawLine(
+      p1,
+      p2,
       paint,
     );
-    drawArrow(Offset(size.width * 0.055.h, size.height * 0.064.h),
-        Offset(size.width * 0.055.h, size.height * 0.084.h), paint, canvas);
+    }
+    if (animation["solarGridVal"] == 1) {
+      drawArrow(p1, p2, paint1, canvas);
+    }
+
+    // final dX = p2.dx - p1.dx;
+    // final dY = p2.dy - p1.dy;
+    // final angle = math.atan2(dY, dX);
+    // final arrowSize = 15;
+    // final arrowAngle = 25 * math.pi / 180;
+    // final arrowHead = Path();
+    // arrowHead.moveTo(
+    //     p2.dx - (progress * (arrowSize * math.cos(angle - arrowAngle))),
+    //     p2.dy - arrowSize * math.sin(angle - arrowAngle));
+    // arrowHead.lineTo(p2.dx, p2.dy);
+    // arrowHead.lineTo(
+    //     p2.dx - (progress * (arrowSize * math.cos(angle + arrowAngle))),
+    //     p2.dy - arrowSize * math.sin(angle + arrowAngle));
+    // arrowHead.close();
+    // canvas.drawPath(arrowHead, paint);
   }
 
-  void drawText(Canvas canvas, String data, Offset offset) {
+  void drawLeftToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
+    if (animation["batteryVal"] == 1) {
+    canvas.drawLine(
+      Offset(size.width * 0.072.h, size.height * 0.065.h),
+      Offset(size.width * 0.098.h, size.height * 0.065.h),
+      paint1,
+    );}else{
+       canvas.drawLine(
+      Offset(size.width * 0.072.h, size.height * 0.065.h),
+      Offset(size.width * 0.098.h, size.height * 0.065.h),
+      paint,
+    );
+    }
+    if (animation["batteryVal"] == 1) {
+      drawArrow( Offset(size.width * 0.072.h, size.height * 0.065.h),
+      Offset(size.width * 0.098.h, size.height * 0.065.h), paint1, canvas);
+    }
+  }
+drawTopToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
+    if (animation["solarVal"] == 1) {
+    canvas.drawLine(
+    Offset(size.width * 0.060.h, 9.3.h),
+      Offset(size.width * 0.060.h, 19.5.h),
+      paint1,
+    );}else{
+      canvas.drawLine(
+     Offset(size.width * 0.060.h, 9.3.h),
+      Offset(size.width * 0.060.h, 19.5.h),
+      paint,
+    );
+    }
+    if (animation["solarVal"] == 1) {
+      drawArrow( Offset(size.width * 0.060.h, 9.3.h),
+      Offset(size.width * 0.060.h, 19.5.h), paint1, canvas);
+    }
+  }
+
+  void drawRightToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
+    if (animation["gridVal"] == 1) {
+    canvas.drawLine(
+      Offset(size.width * 0.024.h, size.height * 0.065.h),
+      Offset(size.width * 0.048.h, size.height * 0.065.h),
+      paint1,
+    );}else{
+      canvas.drawLine(
+      Offset(size.width * 0.024.h, size.height * 0.065.h),
+      Offset(size.width * 0.048.h, size.height * 0.065.h),
+      paint,
+    ); 
+    }
+    if (animation["gridVal"] == 1) {
+      drawArrow( Offset(size.width * 0.024.h, size.height * 0.065.h),
+      Offset(size.width * 0.048.h, size.height * 0.065.h), paint1, canvas);
+    }
+  }
+
+  void drawBottomToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
+   if (animation["generatorVal"] == 1) {
+    canvas.drawLine(
+      Offset(size.width * 0.060.h, size.height * 0.1.h),
+      Offset(size.width * 0.060.h, size.height * 0.074.h),
+      paint1,
+    );}else{
+       canvas.drawLine(
+      Offset(size.width * 0.060.h, size.height * 0.1.h),
+      Offset(size.width * 0.060.h, size.height * 0.074.h),
+      paint,
+    );
+    }
+    if (animation["generatorVal"] == 1) {
+      drawArrow(Offset(size.width * 0.060.h, size.height * 0.1.h),
+      Offset(size.width * 0.060.h, size.height * 0.074.h), paint1, canvas);
+    }
+  }
+
+  void drawText(Canvas canvas, String data, Offset offset, Color color) {
     TextSpan span =
-        new TextSpan(style: new TextStyle(color: Colors.blue[800]), text: data);
+        new TextSpan(style: new TextStyle(color: color,fontSize: 12), text: data);
     TextPainter tp = new TextPainter(
         text: span,
         textAlign: TextAlign.left,
@@ -190,69 +406,47 @@ progress.forward();
 
   //reverse postion of p1 and p2 for arrow direction
   void drawArrow(Offset p1, Offset p2, Paint paint, Canvas canvas) {
-    final dX = p2.dx - p1.dx;
-    final dY = p2.dy - p1.dy;
+    final p3 = Offset(
+        progress * (p2.dx - p1.dx) + p1.dx, progress * (p2.dy - p1.dy) + p1.dy);
+    final dX = p3.dx - p1.dx;
+    final dY = p3.dy - p1.dy;
     final angle = math.atan2(dY, dX);
-    final arrowSize = 15;
-    final arrowAngle = 25 * math.pi / 180;
+    final arrowSize = 10;
+    final arrowAngle = 40 * math.pi / 180;
     final path = Path();
+    // path.moveTo(25, 30);
 
-    path.moveTo(p2.dx - arrowSize * math.cos(angle - arrowAngle),
-        p2.dy - arrowSize * math.sin(angle - arrowAngle));
-    path.lineTo(p2.dx, p2.dy);
-    path.lineTo(p2.dx - arrowSize * math.cos(angle + arrowAngle),
-        p2.dy - arrowSize * math.sin(angle + arrowAngle));
-    path.close();
-    canvas.drawPath(path, paint);
-  }
+    // print("p1--- $p1");
+    // final path = Path()
+    // ..moveTo(p3.dx, p3.dy)
+    // ..lineTo(p3.dx - arrowSize * math.cos(angle - arrowAngle),
+    //     p3.dy + arrowSize * math.sin(angle - arrowAngle))
+    // ..lineTo(p3.dx - arrowSize * math.cos(angle - arrowAngle),
+    //     p3.dy - arrowSize * math.sin(angle - arrowAngle));
 
-   @override
-   bool shouldRepaint(FaceOutlinePainter oldDelegate) {
-     return oldDelegate.progress != progress;
-   }
-}
-
-class MyPainter extends CustomPainter {
-  //         <-- CustomPainter class
-  @override
-  void paint(Canvas canvas, Size size) {
-    //                                             <-- Insert your painting code here.
-    /* final path = Path()
-      ..moveTo(50, 50)
-      ..lineTo(200, 200)
-      ..quadraticBezierTo(200, 0, 150, 100);
-    final paint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4;
-    canvas.drawPath(path, paint);*/
-
-    var paint = Paint();
-    paint.color = Colors.amber;
-    paint.strokeWidth = 5;
-    canvas.drawLine(
-      Offset(0, size.height / 3),
-      Offset(size.width, size.height / 3),
-      paint,
-    );
-
-    paint.color = Colors.blue;
-    paint.style = PaintingStyle.stroke;
-    canvas.drawCircle(
-        Offset(size.width / 2, size.height / 2), size.width / 4, paint);
-
-    paint.color = Colors.green;
-
-    var path = Path();
-    path.moveTo(size.width / 3, size.height * 3 / 4);
-    path.lineTo(size.width / 2, size.height * 5 / 6);
-    path.lineTo(size.width * 3 / 4, size.height * 4 / 6);
-
+    path.moveTo(
+        p1.dx +
+            (p2.dx - p1.dx) * progress -
+            arrowSize * math.cos(angle - arrowAngle),
+        p1.dy +
+            (p2.dy - p1.dy) * progress -
+            arrowSize * math.sin(angle - arrowAngle));
+    path.lineTo(
+        p1.dx + (p2.dx - p1.dx) * progress, p1.dy + (p2.dy - p1.dy) * progress);
+    path.lineTo(
+        p1.dx +
+            (p2.dx - p1.dx) * progress -
+            arrowSize * math.cos(angle + arrowAngle),
+        p1.dy +
+            (p2.dy - p1.dy) * progress -
+            arrowSize * math.sin(angle + arrowAngle));
+    // path.close();
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter old) {
-    return false;
+  bool shouldRepaint(FaceOutlinePainter oldDelegate) {
+    return oldDelegate.progress != progress;
   }
 }
+

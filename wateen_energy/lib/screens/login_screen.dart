@@ -3,11 +3,13 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:wateen_energy/screens/logout_screen.dart';
 import 'package:wateen_energy/screens/performance_screen.dart';
 import '../services/network_api.dart';
 import '../services/service_url.dart';
@@ -16,6 +18,7 @@ import '../utils/colour.dart';
 import '../utils/strings.dart';
 import '../utils/user_table.dart';
 import '../utils/utility.dart';
+import '../widgets/forgotpwd_dialog.dart';
 import '../widgets/form_button.dart';
 import '../widgets/input_form_field.dart';
 import '../widgets/site_map.dart';
@@ -67,41 +70,66 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           child: Padding(
-            padding: EdgeInsets.only(left: 12.w, right: 12.w),
+            padding: EdgeInsets.only(left: 3.w, right: 3.w,top: 3.h),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                /* Image.asset(
-                  'assets/images/app_icon.png',
+                 Image.asset(
+                  'assets/images/enerly.png',
                   width: 27.h,
                   height: 17.h,
-                ),*/
+                ),
                 SizedBox(
                   height: 1.5.h,
                 ),
-                //  Expanded(child: HeatMap()),
-
-                Text(
-                  "Enerlytics",
-                  style: TextStyle(
-                      color: Colors.black, fontSize: _scale.appBarHeading),
-                ),
+                Text("Login",style: TextStyle(fontWeight: FontWeight.w600,fontSize: _scale.loginHeading),),
                 SizedBox(
-                  height: 2.5.h,
+                  height: 1.h,
+                ),
+                Text("Please login to continue",style: TextStyle(fontWeight: FontWeight.w400,fontSize: _scale.listTxt),),
+                SizedBox(
+                  height: 6.h,
                 ),
                 Form(
                   key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      InputFormField(
-                          Strings.enterEmailTxt, TextInputType.emailAddress,
-                          onSaved: (value) => username = value!),
-                      InputFormField(
-                          Strings.pwdTxt, TextInputType.visiblePassword,
-                          onSaved: (value) => password = value!),
+                      Text("Email",style: TextStyle(fontWeight: FontWeight.w400,fontSize: _scale.navButton),),
                       SizedBox(
                         height: 1.h,
+                      ),
+                      InputFormField('assets/images/email.png',
+                          Strings.enterEmailTxt, TextInputType.emailAddress,
+                          onSaved: (value) => username = value!),
+                      SizedBox(height: 4.h,),
+                      Text("Password",style: TextStyle(fontWeight: FontWeight.w400,fontSize: _scale.navButton),),
+                      SizedBox(
+                        height: 1.h,
+                      ),
+                      InputFormField('assets/images/pwd.png',
+                          "Password", TextInputType.visiblePassword,
+                          onSaved: (value) => password = value!),
+                      SizedBox(
+                        height: 0.5.h,
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => ForgotPwdDialog(),
+                            );
+                          },
+                          child: Text("Forgot Password?",style: TextStyle(
+                              color: AppColors.lightBlueShade,fontWeight: FontWeight.w500,
+                              fontSize: _scale.axisHeading),),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 7.h,
                       ),
                       FormButton(Strings.loginBtn, onLoginAction)
                     ],
@@ -134,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void login() {
   //  username = "talha";
   //  password = "talha123";
-
+    GetStorage box = GetStorage();
     Map<String, dynamic> loginData = {
       UserTableKeys.userName: username,
       "password": password,
@@ -147,6 +175,9 @@ class _LoginScreenState extends State<LoginScreen> {
         print(response);
         if (status) {
           Utility.isLoggedIn = true;
+          box.write(Strings.loginChk, true);
+          box.write(Strings.token, response["access"]);
+          print("access"+ response["access"]);
           navigate();
         } else {
           Utility.showSubmitAlert(

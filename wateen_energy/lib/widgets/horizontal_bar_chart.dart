@@ -63,15 +63,18 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
           ],
         ),
         SfCartesianChart(
-               tooltipBehavior: _tooltipBehavior,
+            tooltipBehavior: _tooltipBehavior,
             enableAxisAnimation: true,
             zoomPanBehavior: _zoomPanBehavior,
-            margin: EdgeInsets.only(top: 2.h,left: 6.h),
-
+            margin: EdgeInsets.only(top: 2.h,left: 2.h),
+          //  palette: const [Colors.orange,],
             primaryYAxis:
                 NumericAxis(desiredIntervals: 4, minimum: 0, maximum: Utility.getMaxXAxisValue(widget.chartData)),
-            primaryXAxis: CategoryAxis(labelRotation: -90,
-                ),
+            primaryXAxis: CategoryAxis(//labelRotation: 360,
+              labelPosition: ChartDataLabelPosition.inside,
+              labelStyle: const TextStyle(color: Colors.white),
+
+            ),
             series: <ChartSeries>[
               StackedBarSeries<CityData, String>(
                 name: "Performance Ratio",

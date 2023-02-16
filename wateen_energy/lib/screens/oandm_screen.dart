@@ -388,7 +388,11 @@ class _OnMScreenState extends State<OnMScreen> {
 
   void getOnMData() async {
     EasyLoading.show();
-    futureData = NetworkAPI().httpFetchData(ServiceUrl.oNmUrl, null);
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
+    };
+
+    futureData = NetworkAPI().httpFetchData(ServiceUrl.oNmUrl, headers);
   }
 
   void onFailureAlert() {

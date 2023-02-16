@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:wateen_energy/models/alarm.dart';
 import 'package:wateen_energy/models/sites.dart';
+import '../screens/site_detail_screen.dart';
 import '../utils/AppScale.dart';
 import '../utils/colour.dart';
 import '../utils/strings.dart';
@@ -22,7 +23,11 @@ class SiteItem extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 0.9.h),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context)
+              .pushNamed(SiteDetailScreen.routeName, arguments: site.name);
+
+        },
         child: Container(
             color: Colors.white,
             padding: EdgeInsets.only(left: 1.5.h, right: 1.5.h),
@@ -33,9 +38,9 @@ class SiteItem extends StatelessWidget {
                 Row(
                   children: [
                     Image.asset(
-                      'assets/images/app_icon.png',
-                      width: 9.h,
-                      height: 9.h,
+                      'assets/images/siteitem.png',
+                      width: 8.h,
+                      height: 8.h,
                     ),
                     SizedBox(
                       width: 1.h,
@@ -90,7 +95,7 @@ class SiteItem extends StatelessWidget {
                     SizedBox(
                       width: 2.h,
                     ),
-                    getCustomerData(context, getDate(site.tPower),
+                    getCustomerData(context, site.tPower.toString(),
                         'Total Yield (KWh)'),
                     SizedBox(
                       width: 2.h,

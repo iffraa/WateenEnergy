@@ -5,11 +5,12 @@ class Strings {
   static const String errorMsgTxt = "Please try again later.";
   static const String appNameTxt = "Enerlytics";
   static const String pwdTxt = "Password";
-  static const String loginBtn = "SUBMIT";
+  static const String loginBtn = "LOG IN";
+  static const String loginChk = "LOGIN";
   static const String internetError = "Network not connected.";
   static const String enterNameTxt = "Name";
   static const String contactTxt = "Contact Us";
-  static const String enterEmailTxt = "Username";
+  static const String enterEmailTxt = "Enter Email Address";
   static const String commercialSites = "Total Commercial Sites";
   static const String industrialSites = "Total Industrial Sites";
   static const String residentialSites ="Total Residential Sites";
@@ -87,8 +88,10 @@ class Strings {
   static const String name = "Name";
 
   static const String goldCustomer = "Gold Sites";
-  static const String baseGalleryUrl = "https://zerofat.warsitech.net/uploads/gallery/";
+  static const String weatherAppID = "920c30fb83d9f2228f37bf524f519883";
 
   static const String time = "Time";
+  static const String token = "token";
+
 
 }

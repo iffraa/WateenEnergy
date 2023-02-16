@@ -61,8 +61,11 @@ class _FilterScreenState extends State<FilterScreen> {
                     children: [
                       IconButton(
                         alignment: Alignment.topLeft,
-                        padding:  EdgeInsets.only(top: 2.h,left: 0),
-                        icon: Icon( Icons.arrow_back, color: Colors.white,size: 4.h, ),
+                        padding:  EdgeInsets.only(top: 3.h,left: 0),
+                        icon: ImageIcon(
+                          color: Colors.white,
+                          AssetImage("assets/images/back.png"),
+                        ),
                         onPressed: () =>navigateToAlarmScreen()
                             ,
                       ),

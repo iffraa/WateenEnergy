@@ -25,13 +25,13 @@ class AlarmItem extends StatelessWidget {
         onTap: () {},
         child: Container(
             color: Colors.white,
-            padding: EdgeInsets.only(left: 1.5.h, right: 1.5.h),
+            padding: EdgeInsets.only(left: 1.h, right: 1.h),
             height: 15.5.h,
             width: MediaQuery.of(context).size.width,
             child: Row(
               children: [
                 Image.asset(
-                  'assets/images/app_icon.png',
+                  'assets/images/alarmitem.png',
                   width: 9.h,
                   height: 9.h,
                 ),

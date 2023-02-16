@@ -125,12 +125,11 @@ class NetworkAPI {
         body = response.body;
         print("body " + body);
 
-        bool error = hasError(body);
         final resp = jsonDecode(body);
         print(resp);
-        completionHandler(error, resp);
+        completionHandler(false, resp);
       } else {
-        completionHandler(false, jsonDecode(response.body));
+        completionHandler(true, jsonDecode(response.body));
       }
     } catch (e) {
       print('Exception - $e');
@@ -250,9 +249,10 @@ class NetworkAPI {
     if (headers != null) {
       httpHeaders.addAll(headers as Map<String, String>);
     }
+    String url = this.host + serviceUrl;
 
     try {
-      final response = await http.post(Uri.parse(this.host + serviceUrl),
+      final response = await http.post(Uri.parse(url),
           body: jsonEncode(postData), headers: httpHeaders);
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
@@ -275,12 +275,39 @@ class NetworkAPI {
       httpHeaders.addAll(headers as Map<String, String>);
     }
 
+
     try {
       final response = await http.get(Uri.parse(this.host + serviceUrl),
           headers: httpHeaders);
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         print("===============GET DATA==============");
+
+        return jsonResponse;
+      }
+      throw Exception('Failed to load');
+    } catch (e) {
+      print('Exception - $e');
+    }
+
+    throw Exception('Failed to load');
+  }
+
+
+  Future<Map<String, dynamic>>? httpFetchWeatherData(String serviceUrl,
+      Map<String, String>? headers) async {
+    var httpHeaders = this.commonHeaders;
+    if (headers != null) {
+      httpHeaders.addAll(headers as Map<String, String>);
+    }
+
+
+    try {
+      final response = await http.get(Uri.parse(serviceUrl),
+          headers: httpHeaders);
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        print("===============WEATHER DATA==============");
 
         return jsonResponse;
       }

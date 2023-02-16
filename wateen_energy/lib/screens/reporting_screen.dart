@@ -18,7 +18,9 @@ import '../utils/user_table.dart';
 import '../utils/utility.dart';
 import '../widgets/base_app_bar.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/item_report.dart';
 import '../widgets/main_drawer.dart';
+import '../widgets/report_dialog.dart';
 import '../widgets/search_form_field.dart';
 
 class ReportingScreen extends StatefulWidget {
@@ -36,48 +38,50 @@ class _ReportingScreenState extends State<ReportingScreen> {
   @override
   void initState() {
     super.initState();
-  //  getSites();
-  }
-
-
-
-  String searchResult = "";
-  void onSearch(String? result) {
-    print("result " + result!);
-    setState(() {
-      searchResult =result;
-
-      sites.removeWhere(
-          (e) => !(e.name.toLowerCase().contains(result.toLowerCase())));
-      //  Provider.of<SiteListCN>(context, listen: false).updateData(sites);
-
-      context.read<SiteListCN>().clear();
-      context.read<SiteListCN>().updateData(sites);
-
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     AppScale _scale = AppScale(context);
-    bool isChecked = false;
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
         extendBodyBehindAppBar: true,
         bottomNavigationBar: BottomNavBar(),
-        appBar: BaseAppBar(AppBar(), Strings.sitesTitle),
+        appBar: BaseAppBar(AppBar(), Strings.reportingTitle),
         drawer: MainDrawer(),
         body: SingleChildScrollView(
           child: Container(
             color: AppColors.greyBg,
-            // height:  MediaQuery.of(context).size.height,
+             height:  MediaQuery.of(context).size.height,
             padding:
                 EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.15),
             alignment: Alignment.topLeft,
             child: Column(
-              //mainAxisSize: MainAxisSize.max,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ReportItem("Daily Reports"),
+                    ReportItem("Weekly Reports")
+                  ],),
+                SizedBox(height: 2.h,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ReportItem("Monthly Reports"),
+                    ReportItem("Annual Reports")
+                  ],),
+              /*  SizedBox(height: 2.h,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ReportItem("Customized Reports"),
+                    ReportItem("Saved Reports")
+                  ],),*/
+
 
               ],
             ),
@@ -85,80 +89,5 @@ class _ReportingScreenState extends State<ReportingScreen> {
         ));
   }
 
-  List<Site> sites = [];
 
-  Widget getSitesList(AsyncSnapshot snapshot) {
-    sites = formSitesList(snapshot.data);
-
-    return searchResult.isEmpty ? getSiteData(sites) : getSearchData();
-
-  }
-
-  Widget getSiteData(List<Site> sites)
-  {
-      return Container(
-        padding: EdgeInsets.only(bottom: 6.h),
-        height: MediaQuery.of(context).size.height,
-        child: ListView.builder(
-          padding: EdgeInsets.zero,
-          itemCount: sites.length,
-          itemBuilder: (context, index) {
-            return SiteItem(sites![index]);
-          },
-        ),
-      );
-
-  }
-
-  Widget getSearchData()
-  {
-    return Consumer<SiteListCN>(builder: (context, siteList, child) {
-      return Container(
-        padding: EdgeInsets.only(bottom: 6.h),
-        height: MediaQuery.of(context).size.height,
-        child: ListView.builder(
-          padding: EdgeInsets.zero,
-          itemCount: siteList.data.length,
-          itemBuilder: (context, index) {
-            return SiteItem(siteList.data![index]);
-          },
-        ),
-      );
-    });
-  }
-
-  List<Site> formSitesList(Map<String, dynamic> data) {
-    List<Site> sitesData = [];
-
-    if (data.entries.isNotEmpty) {
-      List sites = data['sites'];
-      for (int i = 0; i < sites.length; i++) {
-        List data = sites[i];
-        Site site = Site(data[0], data[5], data[3], data[2], data[4]);
-        sitesData.add(site);
-      }
-    }
-
-    //  data.forEach((k, v) => print('${k}: ${v}'));
-    return sitesData;
-  }
-
-  void getSites() async {
-    GetStorage box = GetStorage();
-
-    Map<String, String> headers = {
-      //   'Authorization': "Bearer " + box.read("token"),
-    };
-
-    Map<String, String> params = {
-      UserTableKeys.epcName: "EFC",
-    };
-
-    try {
-      futureSites =
-          NetworkAPI().httpGetGraphData(ServiceUrl.getSitesUrl, null, params);
-    } catch (e) {
-      Utility.showSubmitAlert(context, Strings.noRecordTxt, "", null);
-    }
-  }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:wateen_energy/utils/strings.dart';
@@ -79,7 +78,7 @@ class Utility {
 
   }
 
-  static showToast(String msg, BuildContext context, FToast fToast) {
+  /*static showToast(String msg, BuildContext context, FToast fToast) {
     Widget toast = Container(
         width: MediaQuery.of(context).size.width * 0.5,
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
@@ -94,7 +93,7 @@ class Utility {
       gravity: ToastGravity.CENTER,
       toastDuration: Duration(seconds: 2),
     );
-  }
+  }*/
 
 
   static showProgressDialog(BuildContext context) {

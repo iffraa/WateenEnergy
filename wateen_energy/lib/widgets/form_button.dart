@@ -16,29 +16,35 @@ class FormButton extends StatelessWidget {
   Widget build(BuildContext context) {
     AppScale _scale = AppScale(context);
 
-    return Padding(
-        padding:  EdgeInsets.symmetric(vertical: 2.h),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            // onPrimary: Colors.black87,
-             primary: AppColors.darkBlue,
-            minimumSize: Size(MediaQuery
-                .of(context)
-                .size
-                .width, 8.h),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            side: BorderSide(width:1, color:AppColors.lightBlue), //border width and color
-            shape:  RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(2.h)),
-            ),
+    return Align(
+      alignment: Alignment.topRight,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          // onPrimary: Colors.black87,
+           primary: AppColors.darkBlue,
+          maximumSize: Size(14.h, 30.h),
+          //padding:  EdgeInsets.symmetric(horizontal: 4.h),
+          shape:  RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(3.h)),
           ),
-          onPressed: () {
-            onClickAction();
-          },
-          child: Text(text, style:  TextStyle(
-              fontSize: _scale.formButton,
-              color: Colors.white),),
-        )
+        ),
+        onPressed: () {
+          onClickAction();
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(
+              child: Text(text, style:  TextStyle(fontWeight: FontWeight.w500,
+                  fontSize: _scale.ssTxt,
+                  color: Colors.white),),
+            ),
+            SizedBox(width: 1.h,),
+            Icon(Icons.arrow_forward_ios,size: 1.7.h,)
+          ],
+        ),
+      ),
     );
   }
 

@@ -25,6 +25,7 @@ import '../widgets/bottom_nav_bar.dart';
 import '../widgets/main_drawer.dart';
 import '../widgets/site_data_container.dart';
 import '../widgets/solar_energy_chart.dart';
+import '../widgets/weather_dialog.dart';
 
 class SiteDetailScreen extends StatefulWidget {
   static const routeName = '/sitewise';
@@ -143,8 +144,26 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
                           padding: EdgeInsets.all(2.h),
                           child: Column(
                             children: [
-                              SiteAnimation(),
-                           //   EnergyMixChart(getEnergyMix(snapshot), getLabels(snapshot,"solar_hourly"),"Energy Mix",siteName),
+
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                    alignment: Alignment.topRight,
+                                    //  padding:  EdgeInsets.only(top: 2.h),
+                                    icon: Image.asset(
+                                      'assets/images/weather.png',
+                                    ),
+                                    onPressed: () =>{
+                                      showDialog(
+                                          context: context,
+                                          builder: (_) => WeatherDialog(snapshot.data["longitude"],snapshot.data["latitude"])
+                                      )}
+                                ),
+                              ),
+                              SiteAnimation(
+                                  animation: snapshot.data["animation"]),
+
+                              EnergyMixChart(getEnergyMix(snapshot.data["solar_hourly"]), getLabels(snapshot,"solar_hourly"),"Energy Mix",siteName),
                               SizedBox(
                                 height: 5.h,
                               ),
@@ -153,7 +172,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
                                 height: 5.h,
                               ),
                              // SolarEnergyChart(getSolarHourlyData(snapshot)),
-                            //  EnergyMixChart(getEnergyMix(snapshot), getLabels(snapshot,"solar_hourly"),"Actual Solar VS Expected Solar",siteName),
+                            //  EnergyMixChart(getEnergyMix(snapshot.data["actual_vs_solar"]), getLabels(snapshot,"actual_vs_solar"),"Actual Solar VS Expected Solar",siteName),
 
                             ],
                           ),
@@ -181,19 +200,24 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
       UserTableKeys.siteName: siteName,
     };
 
+    GetStorage box = GetStorage();
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
+    };
+
+
+
     EasyLoading.show();
     futureData = NetworkAPI()
-        .httpGetGraphData(ServiceUrl.perfSolarSiteUrl, null, postData);
+        .httpGetGraphData(ServiceUrl.perfSolarSiteUrl, headers, postData);
   }
 
   void onFailureAlert() {
     Navigator.of(context).pop(); // dismiss dialog
   }
 
-  List<List<ChartDataP>> getEnergyMix(AsyncSnapshot snapshot) {
+  List<List<ChartDataP>> getEnergyMix(List prComparison) {
     List<List<ChartDataP>> coordinates = [];
-    Map<String, dynamic> data = snapshot.data;
-    List prComparison = data["solar_hourly"];
     int length = prComparison.length;
 
     List<dynamic> xCoords = prComparison[length - 1];
@@ -209,7 +233,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
 
         chartData.add(ChartDataP(
           xCoords[j],
-          yList[j],
+          yList[j] ,
         ));
       }
       coordinates.add(chartData);

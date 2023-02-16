@@ -25,6 +25,7 @@ import '../widgets/main_drawer.dart';
 import '../widgets/site_map.dart';
 import '../widgets/total_data_container.dart';
 import '../widgets/vertical_bar_chart.dart';
+import '../widgets/weather_dialog.dart';
 
 class PerformanceScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -88,23 +89,24 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                                   DropdownSpinner(
                                       getDropdownData(snapshot, Strings.city),
                                       Strings.city,
-                                      onCitySelected),
+                                      onCitySelected,false),
                                   SizedBox(
                                     width: 2.h,
                                   ),
                                   DropdownSpinner(
                                       getDropdownData(snapshot, Strings.site),
                                       Strings.site,
-                                      onSiteSelected),
+                                      onSiteSelected,false),
                                   SizedBox(
                                     width: 2.h,
                                   ),
                                   DropdownSpinner(
                                       getDropdownData(snapshot, Strings.region),
                                       Strings.region,
-                                      onRegionSelected),
+                                      onRegionSelected,false),
                                 ],
                               ),
+
                               SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Wrap(
@@ -128,7 +130,8 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                           padding: EdgeInsets.all(3.h),
                           child: Column(
                             children: [
-                           //   HorizontalBarChart(getCitySites(snapshot)),
+
+                              HorizontalBarChart(getCitySites(snapshot)),
                               SizedBox(
                                 height: 3.h,
                               ),
@@ -271,15 +274,21 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   String region = "all";
 
   void getSolarOverview() async {
+
     Map<String, dynamic> postData = {
       UserTableKeys.epcName: "EFC",
       UserTableKeys.city: city,
       UserTableKeys.region: region,
     };
 
+    GetStorage box = GetStorage();
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
+     };
+
     EasyLoading.show();
     futureData = NetworkAPI()
-        .httpGetGraphData(ServiceUrl.perfOverviewUrl, null, postData);
+        .httpGetGraphData(ServiceUrl.perfOverviewUrl, headers, postData);
   }
 
   void onFailureAlert() {
@@ -307,10 +316,6 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
 
   @override
   void dispose() {
-    String? currentRoute = ModalRoute.of(context)?.settings.name;
-    if (currentRoute == PerformanceScreen.routeName) {
-      _postsController.close();
-      super.dispose();
-    }
+
   }
 }

@@ -10,6 +10,12 @@ class AppColors{
   static const orangeColor =  Color(0xffF08200);
   static const geenOnlineColor =  Color(0xff005A3D);
   static const greyDropDownColor =  Color(0xffA7AEB4);
+  static const inputFieldColor =  Color(0xff8CB9DD);
+  static const greyContainerColor =  Color(0xffE5E7E9);
+  static const lbl1Color =  Color(0xff0c3c84);
+  static const lbl2Color =  Color(0xff2780bc);
+  static const lbl3Color =  Color(0xff002244);
+  static const lightBlueShade =  Color(0xff3282BA);
 
 }
 

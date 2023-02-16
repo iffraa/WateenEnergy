@@ -4,6 +4,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 import '../utils/AppScale.dart';
 import '../utils/colour.dart';
+import '../utils/strings.dart';
 
 class TotalDataContainer extends StatelessWidget {
   final String data;
@@ -27,11 +28,14 @@ class TotalDataContainer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.event_outlined,
-            color: Colors.black54,
-            size: 3.h,
-          ),
+          Container(
+              decoration: BoxDecoration(
+                  color: AppColors.darkBlue,
+                  borderRadius: BorderRadius.all(Radius.circular(0.6.h))),
+              width: 4.h,
+              height: 4.4.h,
+
+              child: getIcon(this.data)),
           SizedBox(
             height: 1.h,
           ),
@@ -47,12 +51,48 @@ class TotalDataContainer extends StatelessWidget {
           Text(
             this.quantity,
             style: TextStyle(
-                color: Colors.black,fontSize: _scale.sTxt,fontWeight: FontWeight.w700),
+                color: Colors.black,
+                fontSize: _scale.sTxt,
+                fontWeight: FontWeight.w700),
           ),
         ],
       )
       ,
 
+    );
+  }
+
+  Widget getIcon(String text) {
+    switch (text) {
+      case Strings.commercialSites:
+        {
+          return ImageIcon(color: Colors.white,
+            AssetImage("assets/images/skyline.png"),
+          );
+        }
+
+      case Strings.industrialSites:
+        {
+          return ImageIcon(color: Colors.white,
+            AssetImage("assets/images/industrial.png"),
+          );
+        }
+      case Strings.residentialSites:
+        {
+          return ImageIcon(color: Colors.white,
+            AssetImage("assets/images/house.png"),
+          );
+        }
+      case Strings.activeAlarms:
+        {
+          return ImageIcon(color: Colors.white,
+            AssetImage("assets/images/alarmm.png"),
+          );
+        }
+
+    }
+    return ImageIcon(
+      AssetImage("assets/images/commercial.png"),
     );
   }
 }

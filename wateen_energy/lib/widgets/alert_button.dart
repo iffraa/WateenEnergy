@@ -20,7 +20,7 @@ class AlertButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           // onPrimary: Colors.black87,
-          primary: AppColors.greyText,
+          primary: AppColors.darkBlue,
           minimumSize: Size(MediaQuery.of(context).size.width * 0.4, 5.h),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           shape: const RoundedRectangleBorder(

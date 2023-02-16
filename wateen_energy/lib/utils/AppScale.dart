@@ -10,6 +10,7 @@ class AppScale {
   double get subHeading => scaledWidth(0.04);
   double get chartHeading => scaledWidth(0.036);
   double get formButton => scaledHeight(0.027);
+  double get loginHeading => scaledHeight(0.03);
   double get navButton => scaledHeight(0.02);
   double get axisHeading => scaledHeight(0.015);
   double get siteConQTxt => scaledHeight(0.013);
@@ -17,6 +18,7 @@ class AppScale {
   double get sTxt => scaledHeight(0.018);
   double get ssTxt => scaledHeight(0.016);
   double get sssTxt => scaledHeight(0.017);
+  double get forecastItem => scaledWidth(0.034);
 
   double get normalTxt => scaledHeight(0.019);
   double get listTxt => scaledHeight(0.024);

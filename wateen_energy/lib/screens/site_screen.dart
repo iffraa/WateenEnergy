@@ -77,7 +77,7 @@ class _SiteScreenState extends State<SiteScreen> {
         drawer: MainDrawer(),
         body: SingleChildScrollView(
           child: Container(
-            color: AppColors.greyBg,
+            color: Colors.white,
             // height:  MediaQuery.of(context).size.height,
             padding:
                 EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.15),
@@ -87,6 +87,9 @@ class _SiteScreenState extends State<SiteScreen> {
               children: [
                 SearchFormField("Search by site name", TextInputType.text,
                     onSaved: onSearch),
+                Container( height: 1.h,
+                  color: AppColors.greyBg,
+                ),
                 FutureBuilder<Map<String, dynamic>>(
                     future: futureSites,
                     builder: (context, snapshot) {
@@ -161,7 +164,7 @@ class _SiteScreenState extends State<SiteScreen> {
       List sites = data['sites'];
       for (int i = 0; i < sites.length; i++) {
         List data = sites[i];
-        Site site = Site(data[0], data[5], data[3], data[2], data[4]);
+        Site site = Site(data[0], data[4], data[3], data[2], data[1]);
         sitesData.add(site);
       }
     }
@@ -172,9 +175,8 @@ class _SiteScreenState extends State<SiteScreen> {
 
   void getSites() async {
     GetStorage box = GetStorage();
-
     Map<String, String> headers = {
-      //   'Authorization': "Bearer " + box.read("token"),
+      'Authorization': "JWT " + box.read(Strings.token),
     };
 
     Map<String, String> params = {
@@ -183,7 +185,7 @@ class _SiteScreenState extends State<SiteScreen> {
 
     try {
       futureSites =
-          NetworkAPI().httpGetGraphData(ServiceUrl.getSitesUrl, null, params);
+          NetworkAPI().httpGetGraphData(ServiceUrl.getSitesUrl, headers, params);
     } catch (e) {
       Utility.showSubmitAlert(context, Strings.noRecordTxt, "", null);
     }

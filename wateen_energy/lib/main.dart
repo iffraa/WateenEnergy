@@ -1,7 +1,9 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:wateen_energy/screens/alarm_screen.dart';
@@ -16,7 +18,8 @@ import 'package:wateen_energy/utils/alarm_list_cn.dart';
 import 'package:wateen_energy/utils/bottom_nav_index_cn.dart';
 import 'package:wateen_energy/utils/site_list_cn.dart';
 import 'package:wateen_energy/utils/colour.dart';
-import 'package:wateen_energy/widgets/date_range_picker.dart';
+import 'package:wateen_energy/utils/strings.dart';
+import 'package:page_transition/page_transition.dart';
 
 Future<void> main() async {
   await GetStorage.init();
@@ -33,12 +36,27 @@ Future<void> main() async {
     ),
   );}
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+
+  @override void initState() {
+    super.initState();
+    new Future.delayed( const Duration(seconds: 4), () =>
+        Navigator.pushReplacement( context,
+          MaterialPageRoute(builder: (context) => PerformanceScreen()),
+        ));
+  }
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext bContext) {
 
     return   ResponsiveSizer(
         builder: (context, orientation, screenType) {
@@ -51,13 +69,29 @@ class MyApp extends StatelessWidget {
                       .textTheme,
                 ),
                 //  tabBarTheme: const TabBarTheme(indicator: UnderlineTabIndicator( // color for indicator (underline)
-                //    borderSide: BorderSide(color: Colour.tealColor))),
+                  //  borderSide: BorderSide(color: Colour.tealColor))),
                 //  unselectedWidgetColor: AppColors.logoColor,
+
+
+
                   colorScheme: ColorScheme.fromSwatch(
                   primarySwatch: themeColor, accentColor: AppColors.darkBlue)
                   .copyWith(secondary: AppColors.darkBlue),
               ).copyWith(),
-              home:  PerformanceScreen(),
+              home: Builder(
+                builder: (context) {
+                  return AnimatedSplashScreen(
+                      duration: 3000,
+                      splash: 'assets/images/splash.gif',
+                      nextScreen: LoginScreen(),
+                      splashTransition: SplashTransition.fadeTransition,
+                     splashIconSize: MediaQuery.of(context).size.height,
+                    pageTransitionType: PageTransitionType.leftToRight,
+                    //  backgroundColor: Colors.blue
+                  );
+                }
+              )
+         ,
               builder: EasyLoading.init(),
               routes: {
                 PerformanceScreen.routeName: (ctx) => PerformanceScreen(),
@@ -69,12 +103,15 @@ class MyApp extends StatelessWidget {
                 FilterScreen.routeName: (ctx) => FilterScreen(),
                 ReportingScreen.routeName: (ctx) => ReportingScreen(),
 
-              }
+              },
+              localizationsDelegates: [
+              //  GlobalMaterialLocalizations.delegate,
+                MonthYearPickerLocalizations.delegate,
+          ],
           );
         }
     );
   }
-
 }
 
 class MyHomePage extends StatefulWidget {

@@ -52,12 +52,12 @@ class _AlarmsScreenState extends State<AlarmsScreen> {
         body: SingleChildScrollView(
           child: Container(
             color: Colors.white,
-            // height:  MediaQuery.of(context).size.height,
             alignment: Alignment.topLeft,
             child: Column(
-              //mainAxisSize: MainAxisSize.max,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 showFilter(context),
+                SizedBox(height: 1.5.h,),
                 SearchFormField("Search by site name", TextInputType.text,
                     onSaved: onSearch),
                 Container(
@@ -88,8 +88,7 @@ class _AlarmsScreenState extends State<AlarmsScreen> {
         ));
   }
 
-  Widget getSearchData()
-  {
+  Widget getSearchData() {
     return Consumer<AlarmListCN>(builder: (context, alarmList, child) {
       return Container(
         padding: EdgeInsets.only(bottom: 6.h),
@@ -107,32 +106,31 @@ class _AlarmsScreenState extends State<AlarmsScreen> {
 
   Widget showFilter(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 6.h),
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: 21.h,
-      color: Colors.white,
+     // padding: EdgeInsets.only(top: 5.5.h),
+      width: MediaQuery.of(context).size.width,
+      height: 19.h,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Padding(
-            padding:  EdgeInsets.only(top: 3.h,right: 1.h),
+            padding: EdgeInsets.only(top: 3.h, right: 1.h),
             child: IconButton(
-               alignment: Alignment.centerRight,
-              //padding:  EdgeInsets.only(top: 2.h),
-              icon: Image.asset(
-                'assets/images/app_icon.png',
+              alignment: Alignment.center,
+            //  padding:  EdgeInsets.only(top: 2.h),
+              icon: Image.asset(height: 2.h,
+                'assets/images/filter.png',
               ),
               onPressed: () =>
                   Navigator.of(context).pushNamed(FilterScreen.routeName),
             ),
           ),
           Padding(
-            padding:  EdgeInsets.only(right: 2.h),
-            child: Text("Filter",),
+            padding: EdgeInsets.only(right: 1.h, top: 0),
+            child: Text(
+              "Filter",
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
           )
         ],
       ),
@@ -147,15 +145,8 @@ class _AlarmsScreenState extends State<AlarmsScreen> {
       print("vals " + sites.length.toString());
       for (int i = 0; i < sites.length; i++) {
         List data = sites[i];
-        Alarm site = Alarm(
-            data[1],
-            data[4],
-            data[2],
-            data[3],
-            data[6],
-            data[5],
-            data[8],
-            data[7]);
+        Alarm site = Alarm(data[1], data[4], data[2], data[3], data[6], data[5],
+            data[8], data[7]);
         sitesData.add(site);
       }
     }
@@ -164,63 +155,48 @@ class _AlarmsScreenState extends State<AlarmsScreen> {
     return sitesData;
   }
 
-  List<Alarm> getFilteredList( List<Alarm> alarms)
-  {
+  List<Alarm> getFilteredList(List<Alarm> alarms) {
     List<Alarm> filteredList = alarms;
-    final map = ModalRoute
-        .of(context)
-        ?.settings
-        .arguments as Map<String, String>;
+    final map =
+        ModalRoute.of(context)?.settings.arguments as Map<String, String>;
 
-    print("map "+  map[Strings.elapsed].toString());
-    if(map[Strings.region]!.isNotEmpty)
-      {
-        filteredList.removeWhere((item) => item.siteRegion != map[Strings.region]) ;
-      }
-    else if(map[Strings.severity]!.isNotEmpty)
-    {
-      filteredList.removeWhere((item) => item.priority != map[Strings.severity]) ;
-    }
-    else if(map[Strings.category]!.isNotEmpty)
-    {
-      filteredList.removeWhere((item) => item.siteType != map[Strings.category]) ;
-    }
-    else if(map[Strings.elapsed]!.isNotEmpty)
-    {
-      if(map[Strings.elapsed] == Strings.descending) {
+    print("map " + map[Strings.elapsed].toString());
+    if (map[Strings.region]!.isNotEmpty) {
+      filteredList
+          .removeWhere((item) => item.siteRegion != map[Strings.region]);
+    } else if (map[Strings.severity]!.isNotEmpty) {
+      filteredList
+          .removeWhere((item) => item.priority != map[Strings.severity]);
+    } else if (map[Strings.category]!.isNotEmpty) {
+      filteredList
+          .removeWhere((item) => item.siteType != map[Strings.category]);
+    } else if (map[Strings.elapsed]!.isNotEmpty) {
+      if (map[Strings.elapsed] == Strings.descending) {
         filteredList.sort((a, b) => b.elapsedTime.compareTo(a.elapsedTime));
+      } else {
+        filteredList.sort((a, b) => b.elapsedTime.compareTo(a.elapsedTime));
+        filteredList = filteredList.reversed.toList();
       }
-      else
-        {
-          filteredList.sort((a, b) => b.elapsedTime.compareTo(a.elapsedTime));
-          filteredList = filteredList.reversed.toList();
-
-
-        }
-
     }
 
-
-   //
+    //
     List outputList = filteredList.where((o) => o.siteRegion == '1').toList();
 
     return filteredList;
   }
 
   List<Alarm> alarms = [];
+
   Widget getAlarmList(AsyncSnapshot snapshot) {
     alarms = formAlarmsList(snapshot.data);
-    if(ModalRoute.of(context)?.settings.arguments != null) {
-
-      alarms  = getFilteredList(alarms);
+    if (ModalRoute.of(context)?.settings.arguments != null) {
+      alarms = getFilteredList(alarms);
     }
 
     return searchResult.isEmpty ? getAlarmLiveData() : getSearchData();
-
   }
 
-  Widget getAlarmLiveData()
-  {
+  Widget getAlarmLiveData() {
     return Container(
       padding: EdgeInsets.only(bottom: 2.h, top: 2.h),
       height: MediaQuery.of(context).size.height,
@@ -236,31 +212,32 @@ class _AlarmsScreenState extends State<AlarmsScreen> {
 
   Future<List<Alarm>>? getAlarms() async {
     GetStorage box = GetStorage();
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
+    };
 
     List<Alarm> mealsList = <Alarm>[];
     try {
-      futureAlarms = NetworkAPI().httpFetchData(ServiceUrl.alarmUrl, null);
+      futureAlarms = NetworkAPI().httpFetchData(ServiceUrl.alarmUrl, headers);
     } catch (e) {
       Utility.showSubmitAlert(context, Strings.noRecordTxt, "", null);
     }
     return mealsList;
   }
 
-
   String searchResult = "";
+
   void onSearch(String? result) {
     print("result " + result!);
     setState(() {
-      searchResult =result;
+      searchResult = result;
 
       alarms.removeWhere(
-              (e) => !(e.siteName.toLowerCase().contains(result.toLowerCase())));
+          (e) => !(e.siteName.toLowerCase().contains(result.toLowerCase())));
       //  Provider.of<SiteListCN>(context, listen: false).updateData(sites);
 
       context.read<AlarmListCN>().clear();
       context.read<AlarmListCN>().updateData(alarms);
-
     });
   }
-
 }

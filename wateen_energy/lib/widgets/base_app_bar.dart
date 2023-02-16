@@ -28,7 +28,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Text(
             textAlign: TextAlign.start,
             title,
-            style:  TextStyle(fontSize: _scale.appBarHeading, color: Colors.black, ),
+            style:  TextStyle(fontSize: _scale.appBarHeading, color: AppColors.darkBlue, ),
           ),
         ),
         actions: <Widget>[
@@ -63,7 +63,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   IconButton getDrawerIcon(BuildContext context) {
     return IconButton(
       padding:  EdgeInsets.only(top: 2.h),
-      icon: Image.asset('assets/images/app_icon.png'),
+      icon: Image.asset('assets/images/nav_menu.png'),
       onPressed: () => Scaffold.of(context).openDrawer(),
     );
   }

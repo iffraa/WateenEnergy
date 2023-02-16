@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:wateen_energy/screens/oandm_screen.dart';
+import 'package:wateen_energy/screens/reporting_screen.dart';
 import 'package:wateen_energy/screens/site_screen.dart';
 
 import '../screens/alarm_screen.dart';
@@ -47,6 +48,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
       case 3:
         Navigator.of(context).pushNamed(SiteScreen.routeName);
         break;
+      case 4:
+        Navigator.of(context).pushNamed(ReportingScreen.routeName);
+        break;
     }
   }
 
@@ -58,27 +62,39 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return  BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: ImageIcon(
+                AssetImage("assets/images/performance.png"),
+              ),
+
               label:Strings.performanceTitle,
           //    backgroundColor: Colors.green
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.search),
+              icon: ImageIcon(
+                AssetImage("assets/images/onm.png"),
+              ),
+
               label: Strings.oAndMTitle,
            //   backgroundColor: Colors.yellow
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: ImageIcon(
+              AssetImage("assets/images/alarm.png"),
+            ),
             label: Strings.alarmsTitle,
          //   backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon:  ImageIcon(
+                AssetImage("assets/images/sites.png"),
+              ),
             label: "Sites",
          //   backgroundColor: Colors.blue,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: ImageIcon(
+              AssetImage("assets/images/report.png"),
+            ),
             label: Strings.reportingTitle,
         //    backgroundColor: Colors.blue,
           ),

@@ -111,7 +111,7 @@ class _MainDrawerState extends State<MainDrawer> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/app_icon.png',
+                  'assets/images/nav_menu.png',
                   width: 6.h,
                   height: 6.h,
                 ),

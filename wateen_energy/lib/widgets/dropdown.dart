@@ -6,8 +6,9 @@ class DropdownSpinner extends StatefulWidget {
   List<String> list;
   String hintText = "";
   final Function(String) onClickAction;
+  final bool isWide;
 
-   DropdownSpinner(this.list ,this.hintText, this.onClickAction,{super.key});
+   DropdownSpinner(this.list ,this.hintText, this.onClickAction,this.isWide,{super.key});
 
   @override
   State<DropdownSpinner> createState() => _DropdownSpinnerState();
@@ -23,7 +24,7 @@ class _DropdownSpinnerState extends State<DropdownSpinner> {
       decoration: BoxDecoration(
          color: Colors.white.withOpacity(0.5),
           borderRadius: BorderRadius.all(Radius.circular(1.h))),
-      width: 13.5.h,
+      width: widget.isWide ? MediaQuery.of(context).size.width * 0.5 : 13.5.h,
       height: 3.5.h,
       padding: EdgeInsets.only(left: 1.h,right: 1.h),
       child: DropdownButtonHideUnderline(
