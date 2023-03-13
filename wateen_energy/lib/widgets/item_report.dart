@@ -61,7 +61,7 @@ class ReportItem extends StatelessWidget {
                       ),
                       Padding(
                         padding:  EdgeInsets.only(top: 2.h),
-                        child: Text(getText(text),style: TextStyle(color: AppColors.lightBlue,
+                        child: Text(getText(text),style: TextStyle(color: AppColors.darkBlue,
                             fontWeight: FontWeight.w600,fontSize: _scale.navButton),),
                       ),
                     ]

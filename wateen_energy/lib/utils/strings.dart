@@ -32,7 +32,7 @@ class Strings {
   static const String femaleTxt ="Female";
   static const String yield = "Today's Yield";
   static const String activeFaults = "Active Faults";
-  static const String logoutTitle = "Logout";
+  static const String logoutTitle = "Log Out";
 
   static const String perfTitle = "Performance";
   static const String oAndMTitle = "O & M";
@@ -93,5 +93,9 @@ class Strings {
   static const String time = "Time";
   static const String token = "token";
 
+  static  const String userName = "userName";
+  static  const String userEmail = "userEmail";
+  static  const String epcName = "epcName";
+  static const String epcId = "epcId";
 
 }

@@ -107,6 +107,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
                   print('ConnectionState ${snapshot.connectionState}');
 
                   if (snapshot.hasData) {
+                    GetStorage().write(Strings.city, snapshot.data['city']);
                     return Column(
                       children: [
                         Container(
@@ -118,24 +119,24 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
                             scrollDirection: Axis.horizontal,
                             child: Center(
                               child: Wrap(spacing: 1.h, children: [
-                                SiteDataContainer(Strings.todayRevenue,
+                                SiteDataContainer(Strings.todayRevenue, "Rs: " +
                                     snapshot.data[UserTableKeys.todayRevenue]),
                                 SiteDataContainer(Strings.cuf,
-                                    snapshot.data[UserTableKeys.cuf]),
+                                    snapshot.data[UserTableKeys.cuf] + " %"),
                                 SiteDataContainer(Strings.yield,
-                                    snapshot.data[UserTableKeys.todaysYield]),
+                                    snapshot.data[UserTableKeys.todaysYield] + " kWh"),
                                 SiteDataContainer(Strings.activeFaults,
                                     snapshot.data[UserTableKeys.activeFaults]),
                                 SiteDataContainer(Strings.systemSize,
-                                    snapshot.data[UserTableKeys.systemSize]),
+                                    snapshot.data[UserTableKeys.systemSize] + " kW"),
                                 SiteDataContainer(
                                     Strings.performanceRatio,
                                     snapshot
-                                        .data[UserTableKeys.performanceRatio]),
+                                        .data[UserTableKeys.performanceRatio] + " %"),
                                 SiteDataContainer(
                                     Strings.tcpr,
                                     snapshot.data[
-                                        UserTableKeys.tcPerformanceRatio]),
+                                        UserTableKeys.tcPerformanceRatio] + " %"),
                               ]),
                             ),
                           ),
@@ -160,19 +161,18 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
                                       )}
                                 ),
                               ),
-                              SiteAnimation(
-                                  animation: snapshot.data["animation"]),
+                              SiteAnimation(animation: snapshot.data["animation"]),
 
-                              EnergyMixChart(getEnergyMix(snapshot.data["solar_hourly"]), getLabels(snapshot,"solar_hourly"),"Energy Mix",siteName),
+                              EnergyMixChart(getEnergyMix(snapshot.data["solar_hourly"]), Utility.getLabelData(snapshot,"solar_hourly"),"Energy Mix",siteName),
                               SizedBox(
                                 height: 5.h,
                               ),
-                              DynamicLineChart(getDynamicInverterData(snapshot), getLabels(snapshot, "inverter_hourly")),
+                              DynamicLineChart(getDynamicInverterData(snapshot), Utility.getLabelData(snapshot, "inverter_hourly")),
                               SizedBox(
                                 height: 5.h,
                               ),
                              // SolarEnergyChart(getSolarHourlyData(snapshot)),
-                            //  EnergyMixChart(getEnergyMix(snapshot.data["actual_vs_solar"]), getLabels(snapshot,"actual_vs_solar"),"Actual Solar VS Expected Solar",siteName),
+                              EnergyMixChart(getEnergyMix(snapshot.data["actual_vs_solar"]), Utility.getLabelData(snapshot,"actual_vs_solar"),"Actual Solar VS Expected Solar",siteName),
 
                             ],
                           ),
@@ -233,7 +233,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
 
         chartData.add(ChartDataP(
           xCoords[j],
-          yList[j] ,
+          yList[j]  ,
         ));
       }
       coordinates.add(chartData);
@@ -265,14 +265,6 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> {
     return coordinates;
   }
 
-  List<dynamic> getLabels(AsyncSnapshot snapshot, String key)
-  {
-    Map<String, dynamic> data = snapshot.data;
-    List prComparison = data[key];
-    int length = prComparison.length;
-    List<dynamic> labels = prComparison[length - 2];
-    return labels;
-  }
 
   List<List<ChartDataP>> getDynamicInverterData(AsyncSnapshot snapshot) {
     final List<List<ChartDataP>> coordinates = [];

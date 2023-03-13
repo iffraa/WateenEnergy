@@ -21,7 +21,7 @@ class PChartLabel extends StatelessWidget {
           height: 0.8.h,
           width: 4.h,
           decoration: BoxDecoration(
-              color: index == 0 ? AppColors.lbl1Color : index == 1 ?  AppColors.lbl2Color : AppColors.lbl3Color,
+              color: index == 0 ? AppColors.lbl1Color : index == 1 ?  AppColors.yellow : AppColors.lbl3Color,
               borderRadius: BorderRadius.all(Radius.circular(1.h))),
         ),
         SizedBox(

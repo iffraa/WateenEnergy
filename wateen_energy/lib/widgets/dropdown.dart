@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:wateen_energy/utils/colour.dart';
 
 class DropdownSpinner extends StatefulWidget {
 
@@ -24,8 +25,8 @@ class _DropdownSpinnerState extends State<DropdownSpinner> {
       decoration: BoxDecoration(
          color: Colors.white.withOpacity(0.5),
           borderRadius: BorderRadius.all(Radius.circular(1.h))),
-      width: widget.isWide ? MediaQuery.of(context).size.width * 0.5 : 13.5.h,
-      height: 3.5.h,
+      width: widget.isWide ? MediaQuery.of(context).size.width * 0.5 : 13.4.h,
+      height: 3.7.h,
       padding: EdgeInsets.only(left: 1.h,right: 1.h),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -33,10 +34,10 @@ class _DropdownSpinnerState extends State<DropdownSpinner> {
         value: dropdownValue,
         //  value: "Karachi",//widget.list.first,
           hint: new Text(widget.hintText,style: TextStyle(color: Colors.black, fontSize: 15.px),),
-          icon:  Icon(Icons.arrow_downward),
-          iconSize: 2.h,
+          icon:  Icon(Icons.keyboard_arrow_down_sharp,color: AppColors.darkBlue,),
+          iconSize: 2.5.h,
           elevation: 16,
-          style:  TextStyle(color: Colors.black,fontSize: 15.px),
+          style:  TextStyle(color: Colors.black,fontSize: 13.px),
           onChanged: (String? value) {
             // This is called when the user selects an item.
             setState(() {

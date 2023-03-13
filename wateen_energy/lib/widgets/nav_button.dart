@@ -27,7 +27,7 @@ class NavButton extends StatelessWidget {
                 .size
                 .width, 6.h),
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            side: BorderSide(width:1, color:AppColors.lightBlue), //border width and color
+            side: BorderSide(width:1, color:AppColors.yellow), //border width and color
             shape:  RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(2.h)),
             ),

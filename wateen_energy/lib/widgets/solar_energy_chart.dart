@@ -74,7 +74,7 @@ class _SolarEnergyChartState extends State<SolarEnergyChart> {
               height: 0.8.h,
               width: 4.h,
               decoration: BoxDecoration(
-                  color: AppColors.lightBlue,
+                  color: AppColors.yellow,
                   borderRadius: BorderRadius.all(Radius.circular(1.h))),
             ),
             SizedBox(
@@ -115,7 +115,7 @@ class _SolarEnergyChartState extends State<SolarEnergyChart> {
             series: <ChartSeries>[
               AreaSeries<SolarData, String>(
                 name: Strings.solarHourly,
-                  color: AppColors.lightBlue.withOpacity(0.5),
+                  color: AppColors.yellow.withOpacity(0.5),
                   borderColor: Colors.lightBlue,borderWidth: 0.2.h,
                   dataSource: widget.chartData,
                   xValueMapper: (SolarData data, _) => data.x,

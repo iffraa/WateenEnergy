@@ -5,11 +5,18 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import '../utils/AppScale.dart';
 import '../utils/colour.dart';
 
-class EnergyMixButton extends StatelessWidget {
+class EnergyMixButton extends StatefulWidget {
   final String text;
   final Function onClickAction;
 
-  const EnergyMixButton(this.text, this.onClickAction);
+  EnergyMixButton(this.text, this.onClickAction);
+
+  @override
+  State<EnergyMixButton> createState() => _EnergyMixButtonState();
+}
+
+class _EnergyMixButtonState extends State<EnergyMixButton> {
+  bool changeColor = false;
 
   @override
   Widget build(BuildContext context) {
@@ -20,19 +27,22 @@ class EnergyMixButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           // onPrimary: Colors.black87,
-          primary: AppColors.lightBlue,
+          primary:AppColors.lightBlue,// changeColor ? Colors.white : AppColors.lightBlue,
           minimumSize: Size(9.h, 5.h),
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          shape:  RoundedRectangleBorder(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(0.6.h)),
           ),
         ),
         onPressed: () {
-          onClickAction();
+        /*  setState(() {
+            changeColor = !changeColor;
+          });*/
+          widget.onClickAction();
         },
         child: Text(
-          text,
-          style:  TextStyle(fontSize: _scale.subHeading, color: Colors.white),
+          widget.text,
+          style: TextStyle(fontSize: _scale.subHeading, color: Colors.white),
         ),
       ),
     );

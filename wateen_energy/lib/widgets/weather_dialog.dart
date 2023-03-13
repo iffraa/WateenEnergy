@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:wateen_energy/services/service_url.dart';
 import 'package:wateen_energy/widgets/form_button.dart';
@@ -63,95 +64,125 @@ class _WeatherDialogState extends State<WeatherDialog> {
                       child: Container(
                         margin: EdgeInsets.only(
                             top: 9.h, bottom: 9.h, left: 5.h, right: 5.h),
-                        padding: EdgeInsets.all(2.h),
+                       // padding: EdgeInsets.all(2.h),
                         decoration: BoxDecoration(
                             color: AppColors.greyDropDownColor,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(1.h))),
                         //   padding: EdgeInsets.all(0.5.h),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Stack(children: [
-
-                              Container(
-                                padding: EdgeInsets.only(
-                                    top: 3.5.h,
-                                    left: 2.h,
-                                    right: 1.h,
-                                    bottom: 2.h),
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                        "assets/images/weather_bg.png"),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                width: MediaQuery.of(context).size.width * 0.7,
-                                height: 23.h,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  //mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      weatherSnapshot.data!['main']['temp']
-                                          .toString(),
-                                      style: TextStyle(
-                                          fontFamily: '.SF Pro Display',
-                                          color: Colors.white,
-                                          fontSize: _scale.appBarHeading,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      'Tuesday',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: '.SF Pro Display',
-                                        color: Colors.white.withOpacity(0.6),
-                                        fontSize: _scale.chartHeading,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      weatherSnapshot.data!['name'],
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: '.SF Pro Display',
-                                        color: Colors.white,
-                                        fontSize: _scale.chartHeading,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Pakistan',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: '.SF Pro Display',
-                                        color: Colors.white,
-                                        fontSize: _scale.chartHeading,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            IconButton(
+                             // alignment: Alignment.topRight,
+                              padding:  EdgeInsets.zero,
+                              icon: ImageIcon(
+                                color: Colors.white,
+                                AssetImage("assets/images/back.png"),
                               ),
-                              Positioned.fill(child:
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: Container(
+                              onPressed: () =>{Navigator.of(context).pop() }
+                              ,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(2.h),
+                              child: Stack(children: [
+                                Container(
+                                  padding: EdgeInsets.only(
+                                      top: 3.5.h,
+                                      left: 2.h,
+                                      right: 1.h,
+                                      bottom: 2.h),
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
-                                      image:
-                                      AssetImage("assets/images/cloud.png"),
+                                      image: AssetImage(
+                                          "assets/images/weather_bg.png"),
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  width: 20.h,
-                                  height: 20.h,
+                                  width: MediaQuery.of(context).size.width * 0.7,
+                                  height: 23.h,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    //mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        weatherSnapshot.data!['main']['temp']
+                                            .toString(),
+                                        style: TextStyle(
+                                            fontFamily: '.SF Pro Display',
+                                            color: Colors.white,
+                                            fontSize: _scale.appBarHeading,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        Utility.getDay(DateTime.now().weekday),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontFamily: '.SF Pro Display',
+                                          color: Colors.white.withOpacity(0.6),
+                                          fontSize: _scale.chartHeading,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        GetStorage().read(Strings.city),
+                                       // weatherSnapshot.data!['name'],
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontFamily: '.SF Pro Display',
+                                          color: Colors.white,
+                                          fontSize: _scale.chartHeading,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Pakistan',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontFamily: '.SF Pro Display',
+                                          color: Colors.white,
+                                          fontSize: _scale.chartHeading,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ), ),
-                            ]),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Image.network(fit: BoxFit.contain,
+                                   /* getTodayIcon((weatherSnapshot
+                                        .data!['list'] as List)
+                                        .map((i) => Forecast.fromMap(i))
+                                        .toList()),*/
+                                    getTodayIcon(weatherSnapshot),
+                                    width: 17.h,
+                                    height: 17.h,
+                                  ),
+                                ),
+                               /* Positioned.fill(
+                                  child: Align(
+                                    alignment: Alignment.topRight,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: NetworkImage(
+                                          getTodayIcon((forecastSnapshot
+                                                  .data!['list'] as List)
+                                              .map((i) => Forecast.fromMap(i))
+                                              .toList()),
+                                        )),
+                                      ),
+                                      width: 20.h,
+                                      height: 20.h,
+                                    ),
+                                  ),
+                                ),*/
+                              ]),
+                            ),
                             SizedBox(
-                              height: 3.h,
+                              height: 1.h,
                             ),
                             getDaysForecast(
                                 (forecastSnapshot.data!['list'] as List)
@@ -160,43 +191,49 @@ class _WeatherDialogState extends State<WeatherDialog> {
                             SizedBox(
                               height: 3.h,
                             ),
-                            SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Wrap(spacing: 1.h, children: [
-                                  getInfoWidget(
-                                      "WIND DIRECTION",
-                                      weatherSnapshot.data!['wind']['deg']
-                                              .toString() +
-                                          " \u00B0",
-                                      'assets/images/wind.png'),
-                                  getInfoWidget("Solar Module Temperature",
-                                      'N/A', 'assets/images/solar.png'),
-                                  getInfoWidget("Global Horizontal Irradiance",
-                                      'N/A', ''),
-                                  getInfoWidget(
-                                      "WIND VELOCITY",
-                                      weatherSnapshot.data!['wind']['speed']
-                                              .toString() +
-                                          'KM/H',
-                                      '')
-                                ])),
+                            Padding(
+                              padding: EdgeInsets.only(left: 2.h,right: 2.h),
+                              child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Wrap(spacing: 1.h, children: [
+                                    getInfoWidget(
+                                        "WIND DIRECTION",
+                                        weatherSnapshot.data!['wind']['deg']
+                                                .toString() +
+                                            " \u00B0",
+                                        'assets/images/wind.png'),
+                                    getInfoWidget("Solar Module Temperature",
+                                        'N/A', 'assets/images/solar.png'),
+                                    getInfoWidget("Global Horizontal Irradiance",
+                                        'N/A', ''),
+                                    getInfoWidget(
+                                        "WIND VELOCITY",
+                                        weatherSnapshot.data!['wind']['speed']
+                                                .toString() +
+                                            'KM/H',
+                                        '')
+                                  ])),
+                            ),
                             SizedBox(
                               height: 1.5.h,
                             ),
-                            SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Wrap(spacing: 1.h, children: [
-                                  getTimeWidget(
-                                      weatherSnapshot.data!['sys']['sunrise'],
-                                      weatherSnapshot.data!['sys']['sunset']),
-                                  getInfoWidget(
-                                      "Ambient Temperature",
-                                      weatherSnapshot.data!['main']['temp']
-                                              .toString() +
-                                          " \u00B0",
-                                      'assets/images/solar.png'),
-                                  getInfoWidget("Air Polution", 'N/A', ''),
-                                ])),
+                            Padding(
+                              padding: EdgeInsets.only(left: 2.h,right: 2.h,bottom: 2.h),
+                              child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Wrap(spacing: 1.h, children: [
+                                    getTimeWidget(
+                                        weatherSnapshot.data!['sys']['sunrise'],
+                                        weatherSnapshot.data!['sys']['sunset']),
+                                    getInfoWidget(
+                                        "Ambient Temperature",
+                                        weatherSnapshot.data!['main']['temp']
+                                                .toString() +
+                                            " \u00B0",
+                                        'assets/images/solar.png'),
+                                    getInfoWidget("Air Polution", 'N/A', ''),
+                                  ])),
+                            ),
                           ],
                         ),
                       ),
@@ -217,8 +254,6 @@ class _WeatherDialogState extends State<WeatherDialog> {
     for (int i = 0; i < forecastList!.length; i++) {
       String? dateTxt = forecastList[i].date;
       DateTime forecastDate = DateTime.parse(dateTxt!);
-      print("server hour " + forecastDate.hour.toString());
-      print("current hour range " + hour);
       if (forecastDate.hour.toString().contains(hour)) {
         filteredList.add(forecastList[i]);
       }
@@ -251,9 +286,19 @@ class _WeatherDialogState extends State<WeatherDialog> {
     return filterList;
   }
 
+  String getTodayIcon(AsyncSnapshot<Map<String, dynamic>> weatherSnapshot) {
+    DateTime todayDate = DateTime.now();
+    print("todayDate " + todayDate.toString().substring(0,10));
+    String imgUrl = weatherSnapshot.data!['weather'][0]['icon'];
+
+    return 'https://openweathermap.org/img/wn/' + imgUrl! + ".png";  }
+
+
+
   Widget getDaysForecast(List<Forecast>? forecastList) {
     List<Forecast> filterList = getFilterList(forecastList)!;
     return Container(
+      padding: EdgeInsets.only(left: 2.h,right: 2.h),
       height: 15.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

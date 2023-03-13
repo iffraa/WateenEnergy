@@ -12,8 +12,9 @@ import 'package:wateen_energy/models/testenergy.dart';
 import 'package:wateen_energy/widgets/item_contractor.dart';
 import 'package:wateen_energy/widgets/list_heading.dart';
 import 'package:wateen_energy/widgets/performance_line_chart.dart';
-import 'package:wateen_energy/widgets/tickets_data_container.dart';
+import 'package:wateen_energy/widgets/item_critical_tickets.dart';
 import 'package:wateen_energy/widgets/vertical_bar_chart.dart';
+import '../models/alarm.dart';
 import '../services/network_api.dart';
 import '../services/service_url.dart';
 import '../utils/AppScale.dart';
@@ -46,12 +47,14 @@ class _OnMScreenState extends State<OnMScreen> {
   String siteName = "";
   late StreamController _postsController;
   Timer? timer;
+  Future<Map<String, dynamic>>? futureAlarms;
 
   @override
   void initState() {
     super.initState();
 
     getOnMData();
+    getAlarms();
   }
 
   Timer? _startTimerPeriodic(int millisec) {
@@ -97,131 +100,136 @@ class _OnMScreenState extends State<OnMScreen> {
           child: Container(
             color: Colors.black26,
             // height:  MediaQuery.of(context).size.height * 1.6,
-            margin: EdgeInsets.only(
-                 bottom: 5.h),
+            margin: EdgeInsets.only(bottom: 5.h),
             alignment: Alignment.topLeft,
             child: FutureBuilder<Map<String, dynamic>>(
                 future: futureData,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
-                    return Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 2.h, right: 2.h),
-                          //color: Colors.black26,
-                          height: 16.h,
-                          width: MediaQuery.of(context).size.width,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Center(
-                              child: Wrap(spacing: 1.h, children: [
-                                AlarmDataContainer(Strings.majorAlarms,
-                                    snapshot.data[UserTableKeys.majorAlarms]),
-                                AlarmDataContainer(Strings.minorAlarms,
-                                    snapshot.data[UserTableKeys.minorAlarms]),
-                                AlarmDataContainer(
-                                    Strings.criticalAlarms,
-                                    snapshot
-                                        .data[UserTableKeys.criticalAlarms]),
-                                AlarmDataContainer(Strings.totalSites,
-                                    snapshot.data[UserTableKeys.totalSites]),
-                                AlarmDataContainer(Strings.platinumSites,
-                                    snapshot.data[UserTableKeys.platinumSites]),
-                                AlarmDataContainer(Strings.platinumSites,
-                                    snapshot.data[UserTableKeys.platinumSites]),
-                                AlarmDataContainer(Strings.goldCustomer,
-                                    snapshot.data[UserTableKeys.goldCustomer]),
-                                AlarmDataContainer(
-                                    Strings.silverCustomer,
-                                    snapshot
-                                        .data[UserTableKeys.silverCustomer]),
-                                AlarmDataContainer(Strings.otherSites,
-                                    snapshot.data[UserTableKeys.otherCustomer]),
-                              ]),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          color: Colors.white,
-                          child: Padding(
-                            padding: EdgeInsets.all(2.h),
-                            child: Column(
+                    return FutureBuilder<Map<String, dynamic>>(
+                        future: futureAlarms,
+                        builder:
+                            (BuildContext context, AsyncSnapshot alarmSnapshot) {
+                          if (alarmSnapshot.hasData) {
+                            alarms = formAlarmsList(alarmSnapshot.data);
+
+                            return Column(
                               children: [
-                                SiteAlarmsChart(getInverterData(snapshot)),
-                                SizedBox(
-                                  height: 2.h,
-                                ),
-                                getAlarmData(snapshot)
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 1.h,
-                        ),
-                        Container(
-                          height: 20.h,
-                          color: Colors.white,
-                          child: Padding(
-                            padding: EdgeInsets.all(2.h),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  Strings.unresolvedTckts,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  height: 1.h,
-                                ),
-                                Expanded(
+                                Container(
+                                  padding:
+                                      EdgeInsets.only(left: 2.h, right: 2.h),
+                                  //color: Colors.black26,
+                                  height: 16.h,
+                                  width: MediaQuery.of(context).size.width,
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
                                     child: Center(
                                       child: Wrap(spacing: 1.h, children: [
-                                        TicketsDataContainer(
-                                            Strings.todayRevenue,
-                                            "Candle Threads",
-                                            "12:12"),
-                                        TicketsDataContainer(Strings.cuf,
-                                            "Candle Threads", "1:12"),
-                                        TicketsDataContainer(Strings.yield,
-                                            "Candle Threads", "2:22"),
-                                        TicketsDataContainer(
-                                            Strings.activeFaults,
-                                            "Candle Threads",
-                                            "3:33"),
-                                        TicketsDataContainer(Strings.systemSize,
-                                            "Candle Threads", "12:09"),
+                                        AlarmDataContainer(
+                                            Strings.criticalAlarms,
+                                            snapshot.data[
+                                            UserTableKeys.criticalAlarms]),
+                                        AlarmDataContainer(
+                                            Strings.majorAlarms,
+                                            snapshot.data[
+                                                UserTableKeys.majorAlarms]),
+                                        AlarmDataContainer(
+                                            Strings.minorAlarms,
+                                            snapshot.data[
+                                                UserTableKeys.minorAlarms]),
+                                        AlarmDataContainer(
+                                            Strings.totalSites,
+                                            snapshot.data[
+                                                UserTableKeys.totalSites]),
+                                        AlarmDataContainer(
+                                            Strings.platinumSites,
+                                            snapshot.data[
+                                                UserTableKeys.platinumSites]),
+                                        AlarmDataContainer(
+                                            Strings.goldCustomer,
+                                            snapshot.data[
+                                                UserTableKeys.goldCustomer]),
+                                        AlarmDataContainer(
+                                            Strings.silverCustomer,
+                                            snapshot.data[
+                                                UserTableKeys.silverCustomer]),
+                                        AlarmDataContainer(
+                                            Strings.otherSites,
+                                            snapshot.data[
+                                                UserTableKeys.otherCustomer]),
                                       ]),
                                     ),
                                   ),
                                 ),
+                                Container(
+                                  color: Colors.white,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(2.h),
+                                    child: Column(
+                                      children: [
+                                        SiteAlarmsChart(
+                                            getInverterData(snapshot
+                                                .data["site_wise_alarms"]),
+                                            Utility.getLabelData(
+                                                snapshot, 'site_wise_alarms')),
+                                        SizedBox(
+                                          height: 2.h,
+                                        ),
+                                        getAlarmData(snapshot)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 1.h,
+                                ),
+                                Container(
+                                  height: alarms.isNotEmpty ? 20.h : 10.h,
+                                  color: Colors.white,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(bottom:2.h,top: 1.h,left: 2.h,right: 2.h),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ListHeading(
+                                          Strings.unresolvedTckts,
+
+                                        ),
+                                        SizedBox(
+                                          height: 1.h,
+                                        ),
+                                        getAlarmLiveData()
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 1.h,
+                                ),
+                                getContractorList(snapshot),
+                                SizedBox(
+                                  height: 1.h,
+                                ),
+                                getSupplierList(snapshot),
+                                SizedBox(
+                                  height: 1.h,
+                                ),
+                                getOnMList(snapshot)
                               ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 1.h,
-                        ),
-                        getContractorList(snapshot),
-                        SizedBox(
-                          height: 1.h,
-                        ),
-                        getSupplierList(snapshot),
-                        SizedBox(
-                          height: 1.h,
-                        ),
-                        getOnMList(snapshot)
-
-
-                      ],
-                    );
+                            );
+                          } else {
+                            EasyLoading.dismiss();
+                            return Center(
+                                // child: Text("Loading..."),
+                                );
+                          }
+                        });
                   } else {
                     EasyLoading.dismiss();
                     return Center(
-                     // child: Text("Loading..."),
-                    );
+                        // child: Text("Loading..."),
+                        );
                   }
                 }),
           ),
@@ -229,14 +237,14 @@ class _OnMScreenState extends State<OnMScreen> {
   }
 
   Widget getAlarmData(AsyncSnapshot snapshot) {
-    return   SingleChildScrollView(
+    return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Center(
         child: Wrap(spacing: 1.h, children: [
           SiteAlarmContainer(
-              Strings.resolved,
+            Strings.resolved,
             snapshot.data['resolved'],
-              ),
+          ),
           SiteAlarmContainer(
             Strings.received,
             snapshot.data['recieved'],
@@ -248,10 +256,12 @@ class _OnMScreenState extends State<OnMScreen> {
           SiteAlarmContainer(
             Strings.avResponseTime,
             snapshot.data['avg_response'],
-          ),   SiteAlarmContainer(
+          ),
+          SiteAlarmContainer(
             Strings.resolutionSLA,
             snapshot.data['resolution_sla'],
-          ),  ]),
+          ),
+        ]),
       ),
     );
   }
@@ -264,28 +274,66 @@ class _OnMScreenState extends State<OnMScreen> {
       Contractor contractor = Contractor(c[0], i + 1, c[1]);
       contractors.add(contractor);
     }
+    AppScale _scale = AppScale(context);
 
     return Container(
-      height: 21.h,
+      height: 28.h,
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Padding(
-              padding:  EdgeInsets.only(left: 2.h),
+              padding: EdgeInsets.only(left: 2.h, top: 1.h),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child:ListHeading("Contractors")
-              ),
+                  child: ListHeading("Contractor Ranking")),
             ),
           ),
-          Divider(height: 1.h,color: AppColors.greyBg,),
+          SizedBox(
+            height: 1.h,
+          ),
           Container(
-            constraints: BoxConstraints(minWidth: double.infinity, maxHeight: 17.h),
+            padding: EdgeInsets.only(left: 2.h, right: 2.h),
+            height: 5.h,
+            color: AppColors.darkBlue,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Contractors',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+                Text('Rank',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+                Text('Score',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+              ],
+            ),
+          ),
+          Divider(
+            height: 1.h,
+            color: AppColors.greyBg,
+          ),
+          Container(
+            constraints:
+                BoxConstraints(minWidth: double.infinity, maxHeight: 17.h),
             child: ListView.separated(
               separatorBuilder: (context, index) {
-                return Divider(height: 1.h,color: AppColors.greyBg,);
+                return Divider(
+                  height: 1.h,
+                  color: AppColors.greyBg,
+                );
               },
               padding: EdgeInsets.zero,
               itemCount: contractors.length,
@@ -308,27 +356,65 @@ class _OnMScreenState extends State<OnMScreen> {
       contractors.add(contractor);
     }
 
+    AppScale _scale = AppScale(context);
     return Container(
-      height: 21.h,
+      height: 28.h,
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Padding(
-              padding:  EdgeInsets.only(left: 2.h),
+              padding: EdgeInsets.only(left: 2.h, top: 1.h),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child:ListHeading("Suppliers")
-              ),
+                  child: ListHeading("Supplier Ranking")),
             ),
           ),
-          Divider(height: 1.h,color: AppColors.greyBg,),
+          SizedBox(
+            height: 1.h,
+          ),
           Container(
-            constraints: BoxConstraints(minWidth: double.infinity, maxHeight: 17.h),
+            padding: EdgeInsets.only(left: 2.h, right: 2.h),
+            height: 5.h,
+            color: AppColors.darkBlue,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Suppliers',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+                Text('Rank',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+                Text('Score',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+              ],
+            ),
+          ),
+          Divider(
+            height: 1.h,
+            color: AppColors.greyBg,
+          ),
+          Container(
+            constraints:
+                BoxConstraints(minWidth: double.infinity, maxHeight: 17.h),
             child: ListView.separated(
               separatorBuilder: (context, index) {
-                return Divider(height: 1.h,color: AppColors.greyBg,);
+                return Divider(
+                  height: 1.h,
+                  color: AppColors.greyBg,
+                );
               },
               padding: EdgeInsets.zero,
               itemCount: contractors.length,
@@ -342,6 +428,58 @@ class _OnMScreenState extends State<OnMScreen> {
     );
   }
 
+  List<Alarm> alarms = [];
+
+  Widget getAlarmLiveData() {
+
+    if (alarms.isNotEmpty) {
+      return Expanded(
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.zero,
+          itemCount: alarms.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.only(right: 1.h),
+              child: CriticalTicketsItem(alarms[index]),
+            );
+          },
+        ),
+      );
+    }
+    else {
+      return Container();
+    }
+  }
+
+
+  List<Alarm> formAlarmsList(Map<String, dynamic> data) {
+    List<Alarm> alarmsData = [];
+
+    if (data.entries.isNotEmpty) {
+      List sites = data['alarms'];
+      print("vals " + sites.length.toString());
+      for (int i = 0; i < sites.length; i++) {
+        List data = sites[i];
+        if(data[8] == 'Critical') {
+          Alarm site = Alarm(
+              data[1],
+              data[4],
+              data[2],
+              data[3],
+              data[6],
+              data[5],
+              data[8],
+              data[7]);
+          alarmsData.add(site);
+        }
+      }
+    }
+
+    //  data.forEach((k, v) => print('${k}: ${v}'));
+    return alarmsData;
+  }
+
 
   Widget getOnMList(AsyncSnapshot snapshot) {
     List data = snapshot.data["onm"];
@@ -351,28 +489,66 @@ class _OnMScreenState extends State<OnMScreen> {
       Contractor contractor = Contractor(c[0], i + 1, c[1]);
       contractors.add(contractor);
     }
+    AppScale _scale = AppScale(context);
 
     return Container(
-      height: 21.h,
+      height: 28.h,
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Padding(
-              padding:  EdgeInsets.only(left: 2.h),
+              padding: EdgeInsets.only(left: 2.h, top: 1.h),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child:ListHeading("O&M Team")
-              ),
+                  child: ListHeading("O&M Ranking")),
             ),
           ),
-          Divider(height: 1.h,color: AppColors.greyBg,),
+          SizedBox(
+            height: 1.h,
+          ),
           Container(
-            constraints: BoxConstraints(minWidth: double.infinity, maxHeight: 17.h),
+            padding: EdgeInsets.only(left: 2.h, right: 2.h),
+            height: 5.h,
+            color: AppColors.darkBlue,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Suppliers',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+                Text('Rank',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+                Text('Score',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: _scale.normalTxt,
+                      color: Colors.white,
+                    )),
+              ],
+            ),
+          ),
+          Divider(
+            height: 1.h,
+            color: AppColors.greyBg,
+          ),
+          Container(
+            constraints:
+                BoxConstraints(minWidth: double.infinity, maxHeight: 17.h),
             child: ListView.separated(
               separatorBuilder: (context, index) {
-                return Divider(height: 1.h,color: AppColors.greyBg,);
+                return Divider(
+                  height: 1.h,
+                  color: AppColors.greyBg,
+                );
               },
               padding: EdgeInsets.zero,
               itemCount: contractors.length,
@@ -427,7 +603,45 @@ class _OnMScreenState extends State<OnMScreen> {
     return coordinates;
   }
 
-  List<SiteAlamrs> getInverterData(AsyncSnapshot snapshot) {
+  List<List<ChartDataP>> getInverterData(List prComparison) {
+    List<List<ChartDataP>> coordinates = [];
+    int length = prComparison.length;
+
+    List<dynamic> xCoords = prComparison[length - 1];
+    List<dynamic> labels = prComparison[length - 2];
+
+    for (int i = 0; i < labels.length; i++) {
+      List<dynamic> yList = prComparison[i];
+
+      final List<ChartDataP> chartData = [];
+      for (int j = 0; j < yList.length; j++) {
+        chartData.add(ChartDataP(
+          xCoords[j],
+          yList[j],
+        ));
+      }
+      coordinates.add(chartData);
+    }
+
+    return coordinates;
+  }
+
+  Future<List<Alarm>>? getAlarms() async {
+    GetStorage box = GetStorage();
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
+    };
+
+    List<Alarm> mealsList = <Alarm>[];
+    try {
+      futureAlarms = NetworkAPI().httpFetchData(ServiceUrl.alarmUrl, headers);
+    } catch (e) {
+      Utility.showSubmitAlert(context, Strings.noRecordTxt, "", null);
+    }
+    return mealsList;
+  }
+
+  /* List<SiteAlamrs> getInverterData(AsyncSnapshot snapshot) {
     List<SiteAlamrs> coordinates = [];
     Map<String, dynamic> data = snapshot.data;
     List prComparison = data["site_wise_alarms"];
@@ -458,7 +672,7 @@ class _OnMScreenState extends State<OnMScreen> {
     // coordinates = chartData;
 
     return coordinates;
-  }
+  }*/
 
   List<SolarData> getSolarHourlyData(AsyncSnapshot snapshot) {
     List<SolarData> coordinates = [];

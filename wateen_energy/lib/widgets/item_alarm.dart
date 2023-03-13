@@ -59,7 +59,7 @@ class AlarmItem extends StatelessWidget {
                               SizedBox(
                                 height: 0.3.h,
                               ),
-                              Text(alarm.siteName,
+                              Text(alarm.siteName + " - " + alarm.siteRegion,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w300,
                                     fontSize: _scale.ssTxt,
@@ -70,7 +70,7 @@ class AlarmItem extends StatelessWidget {
                           Spacer(),
                           Align(
                             alignment: Alignment.topRight,
-                            child: Container(
+                            child: alarm.priority.isEmpty ? Container() : Container(
                               alignment: Alignment.center,
                               width: 10.h,
                               height: 3.5.h,
@@ -98,7 +98,7 @@ class AlarmItem extends StatelessWidget {
                       Row(
                         children: [
                           getCustomerData(
-                              context, alarm.siteRegion + " " +alarm.siteType, 'Site Type:'),
+                              context,  alarm.siteType, 'Site Type:'),
                           SizedBox(
                             width: 1.5.h,
                           ),
@@ -108,7 +108,8 @@ class AlarmItem extends StatelessWidget {
                             width: 1.5.h,
                           ),
                           getCustomerData(
-                              context, alarm.elapsedTime, 'Elapsed Time:')
+                              context,             alarm.elapsedTime.substring(0,1) + " Days",
+                               'Elapsed Time:')
                         ],
                       ),
                     ],

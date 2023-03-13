@@ -70,7 +70,7 @@ class _MonthYearPickerState extends State<MonthYearPicker> {
       child: Text(
         textAlign: TextAlign.center,
         getMonth(startDate),
-        style: TextStyle(color: Colors.black, fontSize: _scale.axisHeading),
+        style: TextStyle(color: Colors.black, fontSize: 13.px),
       ),
     );
   }

@@ -54,6 +54,8 @@ class NetworkAPI {
           body: jsonEncode(postData), headers: httpHeaders);
       if (response.statusCode == 200) {
         final body = response.body;
+        final headers = response.headers;
+
         final resp = jsonDecode(body);
         print(resp);
         completionHandler(true, resp);

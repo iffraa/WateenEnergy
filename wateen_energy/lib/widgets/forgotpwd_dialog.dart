@@ -9,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:wateen_energy/screens/login_screen.dart';
 import 'package:wateen_energy/screens/logout_screen.dart';
 import 'package:wateen_energy/screens/performance_screen.dart';
 import 'package:wateen_energy/widgets/alert_button.dart';
@@ -81,12 +82,12 @@ class _ForgotPwdDialogState extends State<ForgotPwdDialog> {
             children: <Widget>[
 
               Text("Password Recovery",textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w600,fontSize: _scale.appBarHeading),),
+                style: TextStyle(fontWeight: FontWeight.w600,fontSize: _scale.subHeading),),
               SizedBox(
                 height: 1.h,
               ),
               Text("Enter your Email to receive a verification link.",textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w400,fontSize: _scale.subHeading),),
+                style: TextStyle(fontWeight: FontWeight.w200,fontSize: _scale.subHeading),),
               SizedBox(
                 height: 4.h,
               ),
@@ -118,7 +119,7 @@ class _ForgotPwdDialogState extends State<ForgotPwdDialog> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       if(isActiveConnection) {
-        login();
+        resetPwd();
       }
       else
       {
@@ -130,12 +131,31 @@ class _ForgotPwdDialogState extends State<ForgotPwdDialog> {
       print(password);
   }
 
-  void login() {
+  void resetPwd() {
     GetStorage box = GetStorage();
     Map<String, dynamic> loginData = {
       UserTableKeys.userName: username,
       "password": password,
     };
+
+    EasyLoading.show();
+    NetworkAPI().httpPostRequest(ServiceUrl.resetPwdUrl, null, loginData,
+            (status, response) {
+          if (response != null) {
+            print(response);
+            if (status) {
+              Navigator.of(context).pushNamed(LoginScreen.routeName);
+
+            } else {
+              Utility.showSubmitAlert(
+                  context,"Please try again later", Strings.appNameTxt, onFailureAlert);
+            }
+          } else {
+            Utility.showSubmitAlert(
+                context, "Please try again later", "", onFailureAlert);
+          }
+          EasyLoading.dismiss();
+        });
     print(username);
    }
 

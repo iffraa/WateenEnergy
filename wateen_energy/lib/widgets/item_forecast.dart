@@ -5,6 +5,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import '../models/forecast.dart';
 import '../utils/AppScale.dart';
 import '../utils/colour.dart';
+import '../utils/utility.dart';
 
 class ForecastItem extends StatelessWidget {
   final Forecast forecast;
@@ -31,7 +32,7 @@ class ForecastItem extends StatelessWidget {
         children: [
           Text(
             textAlign: TextAlign.center,
-            getDay(date.weekday),
+            Utility.getDay(date.weekday),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: _scale.forecastItem,
@@ -58,11 +59,5 @@ class ForecastItem extends StatelessWidget {
     );
   }
 
-  String getDay(int weekDay)
-  {
-    print("week " + weekDay.toString());
-    List<String> days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return days[weekDay-1];
-  }
 
 }

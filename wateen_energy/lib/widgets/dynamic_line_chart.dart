@@ -68,7 +68,7 @@ class _DynamicLineChartState extends State<DynamicLineChart> {
     List<LineSeries<ChartDataP, String>> lineSeries = [];
     for (int i = 0; i < widget.chartData.length; i++) {
       lineSeries.add(LineSeries(
-        color: (i == 0) ? AppColors.darkBlue : AppColors.lightBlue,
+        color: (i == 0) ? AppColors.darkBlue : AppColors.yellow,
         name: "Inverter " + (i+1).toString(),
           dataSource: widget.chartData[i],
           xValueMapper: (ChartDataP data, _) => data.x,

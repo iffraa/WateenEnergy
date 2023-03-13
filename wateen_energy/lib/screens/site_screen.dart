@@ -127,8 +127,8 @@ class _SiteScreenState extends State<SiteScreen> {
   Widget getSiteData(List<Site> sites)
   {
       return Container(
-        padding: EdgeInsets.only(bottom: 6.h),
-        height: MediaQuery.of(context).size.height,
+        padding: EdgeInsets.only(bottom: 6.h,top: 1.5.h),
+        height: MediaQuery.of(context).size.height * 0.75,
         child: ListView.builder(
           padding: EdgeInsets.zero,
           itemCount: sites.length,
@@ -144,7 +144,7 @@ class _SiteScreenState extends State<SiteScreen> {
   {
     return Consumer<SiteListCN>(builder: (context, siteList, child) {
       return Container(
-        padding: EdgeInsets.only(bottom: 6.h),
+        padding: EdgeInsets.only(bottom: 6.h,top: 1.5.h),
         height: MediaQuery.of(context).size.height,
         child: ListView.builder(
           padding: EdgeInsets.zero,
@@ -180,7 +180,8 @@ class _SiteScreenState extends State<SiteScreen> {
     };
 
     Map<String, String> params = {
-      UserTableKeys.epcName: "EFC",
+      UserTableKeys.epcName: box.read(Strings.epcName),
+
     };
 
     try {

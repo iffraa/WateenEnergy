@@ -5,13 +5,13 @@ import '../utils/user_table.dart';
 class ChartDataP {
   ChartDataP(this.x, this.y);
   final String x;
-  final double y;
+  final num y;
 }
 
 class EnergyData {
   EnergyData(this.x, this.y);
-  final int x;
-  final double y;
+  final String x;
+  final String y;
 }
 
 class TestData {

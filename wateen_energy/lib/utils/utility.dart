@@ -14,22 +14,53 @@ class Utility {
 
   static double getMaxYAxisValue(List<List<ChartDataP>> chartData)
   {
-    double maxY = 0;
+    num maxY = 0;
     for(int i =0 ; i < chartData.length; i++)
     {
-      double max = 0, temp = 0;
+      num max = 0, temp = 0;
       List<ChartDataP> data = chartData[i];
-      temp = data.fold<num>(0, (max, e) => e.y > max ? e.y : max) as double;
+      temp = data.fold<num>(0, (max, e) => e.y > max ? e.y : max) ;
       if(temp > maxY) {
         maxY = temp;
       }
     }
 
-  //  print("maxy" + maxY.toString());
-   // print("WHY " + ((maxY ~/ 8)*10).toString());
+    return ((maxY ~/ 8)*10);
+  }
+
+  static double getSitesMaxYAxisValue(List<List<ChartDataP>> chartData)
+  {
+    double maxY = 0;
+    for(int i =0 ; i < chartData.length; i++)
+    {
+      double max = 0; int temp = 0;
+      List<ChartDataP> data = chartData[i];
+      temp = data.fold<num>(0, (max, e) => e.y > max ? e.y : max) as int;
+      if(temp > maxY) {
+        maxY = temp.toDouble() ;
+      }
+    }
 
     return ((maxY ~/ 8)*10);
   }
+
+  static String getDay(int weekDay)
+  {
+    print("week " + weekDay.toString());
+    List<String> days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    return days[weekDay-1];
+  }
+
+  static String getMonth(int current_mon)
+  {
+    List months =
+    ['January', 'February', 'March', 'April', 'May','June','July','August','September','October','November','December'];
+    var now = new DateTime.now();
+    current_mon = now.month;
+    return months[current_mon-1];
+
+  }
+
 
   static double getMaxXAxisValue(List<CityData> chartData)
   {
@@ -64,12 +95,27 @@ class Utility {
         itemCount: labels.length,
         itemBuilder: (context, index) {
           return
-          isEnergy ?  PChartLabel(labels[index],index) :  ChartLabel(labels[index],index);
+          isEnergy ?  PChartLabel(labels[index].toString(),index) :  ChartLabel(labels[index].toString(),index);
         },
       ),
     );
   }
 
+  static Widget getColumnChartLabels(List<dynamic> labels, )
+  {
+    return Container(
+      constraints: BoxConstraints(minWidth: double.infinity, maxHeight: 7.h),
+      child: ListView.builder(
+       // scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
+        itemCount: labels.length,
+        itemBuilder: (context, index) {
+          return
+            ChartLabel(labels[index].toString(),index);
+        },
+      ),
+    );
+  }
 
   static TooltipBehavior getToolTipStyle()
   {
@@ -168,7 +214,7 @@ class Utility {
     Widget okButton = TextButton(
       child: const Text(
         "OK",
-        style: TextStyle(fontSize: 20, color: AppColors.lightBlue),
+        style: TextStyle(fontSize: 20, color: AppColors.yellow),
       ),
       onPressed: () {
 
@@ -238,6 +284,14 @@ class Utility {
       return null;
   }
 
+  static List<dynamic> getLabelData(AsyncSnapshot snapshot, String key)
+  {
+    Map<String, dynamic> data = snapshot.data;
+    List prComparison = data[key];
+    int length = prComparison.length;
+    List<dynamic> labels = prComparison[length - 2];
+    return labels;
+  }
 
   static clearData()
   {

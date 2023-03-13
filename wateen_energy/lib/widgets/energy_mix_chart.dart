@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:wateen_energy/utils/strings.dart';
@@ -35,7 +36,8 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
   bool isRangeClicked = false;
 
   String label = "Load";
-  List<List<EnergyData>> energyData = [];
+
+  //List<List<EnergyData>> energyData = [];
 
   @override
   void initState() {
@@ -63,7 +65,11 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GraphHeading(widget.title),
-        widget.title.contains("Energy") ? SizedBox(height: 2.h,): Container(),
+        widget.title.contains("Energy")
+            ? SizedBox(
+                height: 2.h,
+              )
+            : Container(),
         widget.title.contains("Energy") ? getButtons() : Container(),
         Utility.getChartLabels(widget.labels, true),
         SfCartesianChart(
@@ -71,9 +77,13 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
             enableAxisAnimation: true,
             margin: EdgeInsets.zero,
             zoomPanBehavior: _zoomPanBehavior,
-            primaryXAxis: CategoryAxis(labelRotation: -45),
+            primaryXAxis: CategoryAxis(
+                //maximumLabels: widget.chartData.length!,
+                labelRotation: -45,
+                autoScrollingDelta: 55,//(widget.chartData.length! /2).toInt(),
+                autoScrollingMode: AutoScrollingMode.start),
             primaryYAxis: NumericAxis(
-               /* title: AxisTitle(
+                /* title: AxisTitle(
                     text: Strings.energy,
                     textStyle: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -81,19 +91,20 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
                 desiredIntervals: 10,
                 minimum: 0,
                 maximum: Utility.getMaxYAxisValue(widget.chartData)),
-            series:
-              isDayClicked ? getAreaSeries() : getBarSeries()
-            ),
+            series: isDayClicked ? getAreaSeries() : getBarSeries()),
       ],
     );
   }
-
 
   List<LineSeries<ChartDataP, String>> getAreaSeries() {
     List<LineSeries<ChartDataP, String>> lineSeries = [];
     for (int i = 0; i < widget.chartData.length; i++) {
       lineSeries.add(LineSeries(
-          color: (i == 0) ? AppColors.darkBlue : AppColors.lightBlue,
+          color: i == 0
+              ? AppColors.lbl1Color
+              : i == 1
+                  ? AppColors.yellow
+                  : AppColors.lbl3Color,
           name: widget.labels[i].toString(),
           dataSource: widget.chartData[i],
           xValueMapper: (ChartDataP data, _) => data.x,
@@ -113,38 +124,35 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
         yValueMapper: (ChartDataP data, _) => data.y);
   }*/
 
-
   List<ChartSeries<ChartDataP, String>> getBarSeries() {
     print("BAR SERIES");
 
     List<ChartSeries<ChartDataP, String>> lineSeries = [];
-   // for (int i = 0; i < widget.chartData.length; i++) {
-      lineSeries.add(ColumnSeries(
-          color: AppColors.darkBlue ,
-          name: widget.labels[0].toString(),
-          dataSource: widget.chartData[0],
-          xValueMapper: (ChartDataP data, _) => data.x,
-          yValueMapper: (ChartDataP data, _) => data.y)
-      );
+    // for (int i = 0; i < widget.chartData.length; i++) {
+    lineSeries.add(ColumnSeries(
+        color: AppColors.darkBlue,
+        name: widget.labels[0].toString(),
+        dataSource: widget.chartData[0],
+        xValueMapper: (ChartDataP data, _) => data.x,
+        yValueMapper: (ChartDataP data, _) => data.y));
 
-      if(!isRangeClicked){
-      lineSeries.add( LineSeries<ChartDataP, String>(
+    if (!isRangeClicked) {
+      lineSeries.add(LineSeries<ChartDataP, String>(
           name: "P-50",
           color: Colors.red,
           dataSource: widget.chartData[1],
           xValueMapper: (ChartDataP data, _) => data.x,
-          yValueMapper: (ChartDataP data, _) => data.y
-      ));
-    lineSeries.add( LineSeries<ChartDataP, String>(
-        name: "P-90",
-        color: Colors.indigo,
-        dataSource: widget.chartData[2],
-        xValueMapper: (ChartDataP data, _) => data.x,
-        yValueMapper: (ChartDataP data, _) => data.y
-    ));
+          yValueMapper: (ChartDataP data, _) => data.y));
+      lineSeries.add(LineSeries<ChartDataP, String>(
+          name: "P-90",
+          color: Colors.indigo,
+          dataSource: widget.chartData[2],
+          xValueMapper: (ChartDataP data, _) => data.x,
+          yValueMapper: (ChartDataP data, _) => data.y));
     }
     return lineSeries;
   }
+
   /*BarSeries<ChartDataP, String> getBarSeries() {
     return BarSeries<ChartDataP, String>(
         name: label,
@@ -178,16 +186,14 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
 
   void onDayClicked() {
     getDailyEnergyData(ServiceUrl.perfSolarSiteUrl, true);
-
   }
 
   void onMonthClicked() {
-    getEnergyData(ServiceUrl.energyMonthlyUrl,false);
+    getEnergyData(ServiceUrl.energyMonthlyUrl, false);
   }
 
   void onYearClicked() {
-    getEnergyData(ServiceUrl.energyYearlyUrl,false);
-
+    getEnergyData(ServiceUrl.energyYearlyUrl, false);
   }
 
   void onRangeClicked() async {
@@ -230,111 +236,122 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
 
   void onDateSelected(String date) {}
 
-  void getEnergyData(String url,bool isDay)
-  {
-    url = url + UserTableKeys.siteName + "=" + widget.siteName;
+  void getEnergyData(String url, bool isDay) {
+    GetStorage box = GetStorage();
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
+    };
+
+    Map<String, String> params = {
+      'site_name': widget.siteName,
+    };
+
+    print(box.read(Strings.token));
+    // url = url + UserTableKeys.siteName + "=" + widget.siteName;
     List data = [];
     EasyLoading.show();
-    NetworkAPI().httpGetRequest(url, null,
-            (error, response) {
-          if (response != null) {
-            print(response);
-            if (!error) {
-              url.contains(ServiceUrl.energyMonthlyUrl) ? data = response["monthly_data"] : data = response["yearly_data"];
-              updateChartData(data);
-              updateLabels(data);
-              setState(() {
-                isDayClicked = isDay;
-              });
-            } else {
-              print("ERROR");
+    NetworkAPI().httpPostRequest(url, headers, params, (status, response) {
+      if (response != null) {
+        print(response);
+        if (status) {
+          url.contains(ServiceUrl.energyMonthlyUrl)
+              ? data = response["monthly_data"]
+              : data = response["yearly_data"];
+          updateChartData(data);
+          updateLabels(data);
+          setState(() {
+            isDayClicked = isDay;
+          });
+        } else {
+          print("ERROR");
 
-              // Utility.showSubmitAlert(context, response["detail"], Strings.appNameTxt, onFailureAlert);
-            }
-          } else {
-           // Utility.showSubmitAlert(context, "Please try again later", "", onFailureAlert);
-          }
-          EasyLoading.dismiss();
-        });
+          // Utility.showSubmitAlert(context, response["detail"], Strings.appNameTxt, onFailureAlert);
+        }
+      } else {
+        print("response is null");
+      }
+      EasyLoading.dismiss();
+    });
   }
 
-
-  void getDailyEnergyData(String url,bool isDay)
-  {
+  void getDailyEnergyData(String url, bool isDay) {
     Map<String, dynamic> postData = {
       UserTableKeys.siteName: widget.siteName,
+    };
+    GetStorage box = GetStorage();
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
     };
 
     List data = [];
     EasyLoading.show();
-    NetworkAPI().httpPostData(url, null,postData,
-            (error, response) {
-          if (response != null) {
-            print(response);
-            if (!error) {
-              data = response["solar_hourly"] ;
-              updateChartData(data);
-              updateLabels(data);
-              setState(() {
-                isDayClicked = isDay;
-              });
-            } else {
-              print("ERROR");
+    NetworkAPI().httpPostData(url, headers, postData, (error, response) {
+      if (response != null) {
+        print(response);
+        if (!error) {
+          data = response["solar_hourly"];
+          updateChartData(data);
+          updateLabels(data);
+          setState(() {
+            isDayClicked = isDay;
+          });
+        } else {
+          print("ERROR");
 
-              // Utility.showSubmitAlert(context, response["detail"], Strings.appNameTxt, onFailureAlert);
-            }
-          } else {
-            // Utility.showSubmitAlert(context, "Please try again later", "", onFailureAlert);
-          }
-          EasyLoading.dismiss();
-        });
+          // Utility.showSubmitAlert(context, response["detail"], Strings.appNameTxt, onFailureAlert);
+        }
+      } else {
+        // Utility.showSubmitAlert(context, "Please try again later", "", onFailureAlert);
+      }
+      EasyLoading.dismiss();
+    });
   }
 
-  void getDateRangeEnergyData(String strtDate, String endDate)
-  {
+  void getDateRangeEnergyData(String strtDate, String endDate) {
     Map<String, dynamic> postData = {
       UserTableKeys.siteName: widget.siteName,
-      "start_date" : strtDate.split(" ")[0],
-      "end_date" : endDate.split(" ")[0]
+      "start_date": strtDate.split(" ")[0],
+      "end_date": endDate.split(" ")[0]
+    };
+    GetStorage box = GetStorage();
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
     };
 
     List data = [];
     EasyLoading.show();
-    NetworkAPI().httpPostRequest(ServiceUrl.energyDateUrl, null,postData,
-            (status, response) {
-          if (response != null) {
-            print(response);
-            if (status) {
-              data = response["custom_data"] ;
-              updateChartData(data);
-              updateLabels(data);
-              setState(() {
-                isDayClicked = false;
-                isRangeClicked = true;
-              });
-            } else {
-              print("ERROR");
+    NetworkAPI().httpPostRequest(ServiceUrl.energyDateUrl, headers, postData,
+        (status, response) {
+      if (response != null) {
+        print(response);
+        if (status) {
+          data = response["custom_data"];
+          updateChartData(data);
+          updateLabels(data);
+          setState(() {
+            isDayClicked = false;
+            isRangeClicked = true;
+          });
+        } else {
+          print("ERROR");
 
-              // Utility.showSubmitAlert(context, response["detail"], Strings.appNameTxt, onFailureAlert);
-            }
-          } else {
-            // Utility.showSubmitAlert(context, "Please try again later", "", onFailureAlert);
-          }
-          EasyLoading.dismiss();
-        });
+          // Utility.showSubmitAlert(context, response["detail"], Strings.appNameTxt, onFailureAlert);
+        }
+      } else {
+        // Utility.showSubmitAlert(context, "Please try again later", "", onFailureAlert);
+      }
+      EasyLoading.dismiss();
+    });
   }
 
-
-  void updateLabels(List prComparison)
-  {
+  void updateLabels(List prComparison) {
     int length = prComparison.length;
     List<dynamic> labels = prComparison[length - 2];
     widget.labels.clear();
     widget.labels.addAll(labels);
   }
 
-
-  List<List<ChartDataP>> updateChartData( List prComparison) {
+  List<List<ChartDataP>> updateChartData(List prComparison) {
     int length = prComparison.length;
     List<List<ChartDataP>> coordinates = [];
 
@@ -348,7 +365,6 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
 
       final List<ChartDataP> chartData = [];
       for (int j = 0; j < yList.length; j++) {
-
         var x = xCoords[j];
         chartData.add(ChartDataP(
           x.toString(),
@@ -360,5 +376,4 @@ class _EnergyMixChartState extends State<EnergyMixChart> {
     }
     return coordinates;
   }
-
 }

@@ -10,9 +10,10 @@ import '../utils/utility.dart';
 import 'graph_heading.dart';
 
 class SiteAlarmsChart extends StatefulWidget {
-  final List<SiteAlamrs> chartData;
+  final List<List<ChartDataP>> chartData;
+  final List<dynamic> labels;
 
-  SiteAlarmsChart(this.chartData);
+  SiteAlarmsChart(this.chartData,this.labels);
 
   @override
   State<SiteAlarmsChart> createState() => _SiteAlarmsChartState();
@@ -41,91 +42,41 @@ class _SiteAlarmsChartState extends State<SiteAlarmsChart> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GraphHeading("Site Wise Alarms as of May 2019, 09:41 PM"),
+        GraphHeading("Site Wise Alarms as of " + Utility.getDay(DateTime.now().weekday) + " " + DateTime.now().day.toString() +
+            " " + Utility.getMonth(DateTime.now().month) + " " + DateTime.now().year.toString()),
+
         SizedBox(height: 0.8.h,),
-        Row(
-          children: [
-            Container(
-              height: 0.8.h,
-              width: 4.h,
-              decoration: BoxDecoration(
-                  color: AppColors.lightBlue,
-                  borderRadius: BorderRadius.all(Radius.circular(1.h))),
-            ),
-            SizedBox(
-              width: 2.h,
-            ),
-            Text(
-              "Major",
-              style: TextStyle(fontSize: _scale.axisHeading),
-              textAlign: TextAlign.start,
-            ),
-            SizedBox(width: 4.h,),
-            Container(
-              height: 0.8.h,
-              width: 4.h,
-              decoration: BoxDecoration(
-                  color: Colors.lightBlue,
-                  borderRadius: BorderRadius.all(Radius.circular(1.h))),
-            ),
-            SizedBox(
-              width: 2.h,
-            ),
-            Text(
-              "Minor",
-              style: TextStyle(fontSize: _scale.axisHeading),
-              textAlign: TextAlign.start,
-            ),
-            SizedBox(width: 4.h,),
-            Container(
-              height: 0.8.h,
-              width: 4.h,
-              decoration: BoxDecoration(
-                  color: AppColors.darkBlue,
-                  borderRadius: BorderRadius.all(Radius.circular(1.h))),
-            ),
-            SizedBox(
-              width: 2.h,
-            ),
-            Text(
-              "Critical",
-              style: TextStyle(fontSize: _scale.axisHeading),
-              textAlign: TextAlign.start,
-            ),
-
-          ],
-        ),
-
+        Utility.getChartLabels(widget.labels, false),
         SfCartesianChart(
             tooltipBehavior: _tooltipBehavior,
             enableAxisAnimation: true,
             margin: EdgeInsets.only(top: 2.h),
                 primaryXAxis: CategoryAxis(),
             primaryYAxis:
-                NumericAxis( minimum: 0, maximum: 1),
+                NumericAxis( minimum: 0, maximum: Utility.getSitesMaxYAxisValue(widget.chartData) + 5),
             enableSideBySideSeriesPlacement: true,
-            series: <ChartSeries<SiteAlamrs, String>>[
-              ColumnSeries<SiteAlamrs, String>(
-                  name: "Major",
-                //  dataLabelSettings: DataLabelSettings(isVisible: true),
-                  color: AppColors.lightBlue,
-                  dataSource: widget.chartData,
-                  xValueMapper: (SiteAlamrs data, _) => data.x,
-                  yValueMapper: (SiteAlamrs data, _) => data.y1),
-              ColumnSeries<SiteAlamrs, String>(
-                  name: "Minor",
-                  color: Colors.lightBlue,
-                  dataSource: widget.chartData,
-                  xValueMapper: (SiteAlamrs data, _) => data.x,
-                  yValueMapper: (SiteAlamrs data, _) => data.y2),
-              ColumnSeries<SiteAlamrs, String>(
-                  name: "Critical",
-                  color: AppColors.darkBlue,
-                  dataSource: widget.chartData,
-                  xValueMapper: (SiteAlamrs data, _) => data.x,
-                  yValueMapper: (SiteAlamrs data, _) => data.y3)
-            ]),
+            series: getBarSeries()
+        ),
       ],
     );
   }
+
+
+  List<ChartSeries<ChartDataP, String>> getBarSeries() {
+
+    List<ChartSeries<ChartDataP, String>> lineSeries = [];
+    // for (int i = 0; i < widget.chartData.length; i++) {
+    lineSeries.add(ColumnSeries(
+        color: AppColors.darkBlue ,
+        name: widget.labels[0].toString(),
+        dataSource: widget.chartData[0],
+        xValueMapper: (ChartDataP data, _) => data.x,
+        yValueMapper: (ChartDataP data, _) => data.y)
+    );
+
+
+
+    return lineSeries;
+  }
+
 }

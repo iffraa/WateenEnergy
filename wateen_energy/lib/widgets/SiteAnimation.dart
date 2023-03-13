@@ -20,10 +20,11 @@ class _SiteAnimationState extends State<SiteAnimation>
   late AnimationController _animationController;
   Path? _path;
 
+  Map<String, ui.Image?> assetUiImages = {};
+
   ui.Image? image;
   @override
   void initState() {
-    
     _animationController =
         AnimationController(vsync: this, duration: Duration(seconds: 5));
     _animationController.repeat();
@@ -40,11 +41,41 @@ class _SiteAnimationState extends State<SiteAnimation>
     // controller.forward();
     // _path = drawPath();
     // print(widget.animation);
-    
+
+    loadingImages();
+
     super.initState();
   }
 
-   loadImage(String path) async {
+  Future<void> loadingImages() async {
+    try {
+      final assetImages = {
+        'house': "assets/images/house_an.png",
+        'electric_pole': "assets/images/electric_pole_an.png",
+        'generator': "assets/images/generator_an.png",
+        'system': "assets/images/system_an.png",
+        'battery': "assets/images/battery_an.png",
+      };
+
+
+      final result = <String, ui.Image?>{};
+
+      final data = assetImages.entries.toList();
+
+      for (var i = 0; i < data.length; i++) {
+        final img = await loadImage(data[i].value);
+
+        result[data[i].key] = img;
+      }
+
+      assetUiImages = result;
+      setState(() {});
+    } catch (e) {
+      debugPrint("$e");
+    }
+  }
+
+  loadImage(String path) async {
     final ByteData data = await rootBundle.load(path);
     final ui.Codec codec =
         await ui.instantiateImageCodec(data.buffer.asUint8List());
@@ -72,336 +103,368 @@ class _SiteAnimationState extends State<SiteAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: 45.h,
-        color: Colors.white,
-        //   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 80),
-        child: FutureBuilder(
-          future: loadImage("assets/images/battery.png"),
-          builder: (BuildContext context,AsyncSnapshot snapshot) {
-            if(!snapshot.hasData){
-              return Center(child: CircularProgressIndicator(),);
-            }
-            return 
-             AnimatedBuilder(
-              // Inner yellow container
-              animation: _animationController,
-              builder: (_, constraints) => Container(
-                width: MediaQuery.of(context).size.width,
-                height: 45.h,
-    
-                // width: constraints.widthConstraints().maxWidth,
-                // height: constraints.heightConstraints().maxHeight,
-                // color: Colors.yellow,
-                color: Colors.white,
-                child: CustomPaint(
-                    painter: FaceOutlinePainter(
-                        _animationController.value, widget.animation, image)),
-              ),
-            );
-          }
-        ),
-      ),
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Container(
+          margin: EdgeInsets.zero,
+          alignment: Alignment.center,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.width - 10.h ,
+          //color: Colors.white,
+          child: CustomPaint(
+              painter: FaceOutlinePainter(
+            _animationController.value,
+            widget.animation,
+            assetUiImages,
+            MediaQuery.of(context).size.width * 0.3,
+          )),
+        );
+      },
     );
   }
 }
 
 class FaceOutlinePainter extends CustomPainter {
-  double progress;
-  var animation;
-   ui.Image? image1;
-  FaceOutlinePainter(this.progress, this.animation, this.image1);
+  static const circleRadius = 30.0;
 
-  Path getRightLinePath(Size size) {
-    var path = Path();
-    path.moveTo(size.width * 0.05.h, 9.h);
-    path.lineTo(size.width * 0.03.h, 19.5.h);
-    return path;
-  }
+  final Offset center = const Offset(0, 0);
+
+  final double distanceFromCenterToSiteCircle;
+
+  double progress;
+
+  dynamic animation;
+
+  final Map<String, ui.Image?> images;
+
+  FaceOutlinePainter(
+    this.progress,
+    this.animation,
+    this.images,
+    this.distanceFromCenterToSiteCircle,
+  );
 
   @override
   void paint(Canvas canvas, Size size) {
+    final centerCirclePaint = Paint()
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 1.5
+      ..color = const Color(0xff2C4D82);
+
+    final sideCirclePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..color = const Color(0xff2C4D82);
+
+    // Draw top-center circle
+    canvas.drawCircle(
+      center + Offset(-distanceFromCenterToSiteCircle, 0),
+      circleRadius,
+      sideCirclePaint,
+    );
+
+    // Draw bottom-center circle
+    canvas.drawCircle(
+      center + Offset(distanceFromCenterToSiteCircle, 0),
+      circleRadius,
+      sideCirclePaint,
+    );
+
+    // Draw left-center circle
+    canvas.drawCircle(
+      center + Offset(0, -distanceFromCenterToSiteCircle),
+      circleRadius,
+      sideCirclePaint,
+    );
+
+    // Draw right-center circle
+    canvas.drawCircle(
+      center + Offset(0, distanceFromCenterToSiteCircle),
+      circleRadius,
+      sideCirclePaint,
+    );
+
+// ---------------------DRAWING TEXT-----------------------
+
+    // Draw top circle text
+    drawCircleTextAndIcon(
+      canvas: canvas,
+      image: images['system'],
+      valueText: "${animation["values"][0]}",
+      unitText: "${animation["units"][0]}",
+      offset: center + Offset(0, -distanceFromCenterToSiteCircle),
+      color: const Color(0xff2C4D82),
+    );
+    // Draw left circle text
+    drawCircleTextAndIcon(
+      canvas: canvas,
+      image: images['electric_pole'],
+      valueText: "${animation["values"][1]}",
+      unitText: "${animation["units"][1]}",
+      offset: center + Offset(0 - distanceFromCenterToSiteCircle, 0),
+      color: const Color(0xff2C4D82),
+    );
+    // Draw bottom circle text
+    drawCircleTextAndIcon(
+      canvas: canvas,
+      image: images['generator'],
+      valueText: "${animation["values"][3]}",
+      unitText: "${animation["units"][3]}",
+      offset: center + Offset(0, distanceFromCenterToSiteCircle),
+      color: const Color(0xff2C4D82),
+    );
+    // Draw right circle text
+    drawCircleTextAndIcon(
+      canvas: canvas,
+      image: images['battery'],
+      valueText: "${animation["values"][4]}",
+      unitText: "${animation["units"][4]}",
+      offset: center + Offset(distanceFromCenterToSiteCircle, 0),
+      color: const Color(0xff2C4D82),
+    );
+
+// ---------------------DRAWING CONNECTION LINES-----------------------
     // Define a paint object
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5
       ..color = Colors.grey;
 
-       final paint1 = Paint()
+    final paint1 = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5
-      ..color = Color(0xff2C4D82);
-       final circlePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5
-      ..color = Color(0xff2C4D82);
-      final ceneterCirclePaint = Paint()
-      ..style = PaintingStyle.fill
-      // ..strokeWidth = 1.5
-      ..color = Color(0xff2C4D82);
-     
+      ..color = const Color(0xff2C4D82);
 
-    Offset topCircleOffset =
-        Offset(size.width * 0.06.h, size.height * 0.015.h);
-    //top circle
-    canvas.drawCircle(topCircleOffset, 4.h, circlePaint);
-    drawText(
-        canvas, "${animation["values"][0]}", Offset(size.width * 0.059.h, size.height * 0.012.h),Color(0xff2C4D82));
-        drawText(
-        canvas, "${animation["units"][0]}", Offset(size.width * 0.057.h, size.height * 0.018.h),Color(0xff2C4D82));
-    final Rect destination = Rect.fromLTWH(
-        size.width * 0.057.h, size.height * 0.005.h, 15.00, 15.00);
-    final Rect source =
-        Rect.fromLTWH(0, 0, image1!.width.toDouble()??0.00, image1!.height.toDouble());
-    canvas.drawImageRect(image1!, source, destination, Paint());
-    // canvas.drawImage(
-    //     image, Offset(size.width * 0.052.h, size.height * 0.012.h), Paint());
-    //top right
-    canvas.drawCircle(
-        Offset(size.width * 0.012.h, size.height * 0.063.h), 4.h, circlePaint);
-    drawText(
-        canvas, "${animation["values"][1]}", Offset(size.width * 0.009.h, size.height * 0.062.h),Color(0xff2C4D82));
-        drawText(
-        canvas, "${animation["units"][1]}", Offset(size.width * 0.009.h, size.height * 0.068.h),Color(0xff2C4D82));
-    final Rect destination2 = Rect.fromLTWH(
-        size.width * 0.009.h, size.height * 0.055.h, 15.00, 15.00);
-    final Rect source2 =
-        Rect.fromLTWH(0, 0, image1!.width.toDouble(), image1!.height.toDouble());
-    canvas.drawImageRect(image1!, source2, destination2, Paint());
-    drawTopToRightLine(canvas, paint, size,paint1);
-    drawTopToLeftLine(canvas,paint,size,paint1);
-    drawRightToCenterLine(canvas, paint, size,paint1);
-    drawTopToCenterLine(canvas, paint, size,paint1);
-    //draw centre circle
-    canvas.drawCircle(
-        Offset(size.width * 0.06.h,size.height * 0.063.h), 4.h, ceneterCirclePaint);
-    drawText(
-        canvas, "${animation["values"][2]}", Offset(size.width * 0.056.h, size.height * 0.062.h),Colors.white);
-         drawText(
-        canvas, "${animation["units"][2]}", Offset(size.width * 0.057.h, size.height * 0.068.h),Colors.white);
-    final Rect destination3 = Rect.fromLTWH(
-        size.width * 0.057.h, size.height * 0.055.h, 15.00, 15.00);
-    final Rect source3 =
-        Rect.fromLTWH(0, 0, image1!.width.toDouble(), image1!.height.toDouble());
-    canvas.drawImageRect(image1!, source3, destination3, Paint());
-    //bottom circle
-    canvas.drawCircle(
-        Offset(size.width * 0.06.h, size.height * 0.111.h), 4.h, circlePaint);
+    drawTopToRightLine(canvas, paint, paint1);
+    drawTopToLeftLine(canvas, paint, paint1);
+    drawRightToCenterLine(canvas, paint, paint1);
+    drawTopToCenterLine(canvas, paint, paint1);
 
-    drawText(
-        canvas, "${animation["values"][3]}", Offset(size.width * 0.059.h, size.height * 0.108.h),Color(0xff2C4D82));
-        drawText(
-        canvas, "${animation["units"][3]}", Offset(size.width * 0.057.h, size.height * 0.113.h),Color(0xff2C4D82));
-    final Rect destination4 = Rect.fromLTWH(
-        size.width * 0.057.h, size.height * 0.102.h, 15.00, 15.00);
-    final Rect source4 =
-        Rect.fromLTWH(0, 0, image1!.width.toDouble(), image1!.height.toDouble());
-    canvas.drawImageRect(image1!, source4, destination4, Paint());
-    drawBottomToCenterLine(canvas, paint, size,paint1);
+    drawBottomToCenterLine(canvas, paint, paint1);
 
-    //top left circle
-    canvas.drawCircle(
-        Offset(size.width * 0.11.h, size.height * 0.063.h), 4.h, circlePaint);
-    drawText(
-        canvas, "${animation["values"][4]}", Offset(size.width * 0.109.h, size.height * 0.060.h),Color(0xff2C4D82));
-        drawText(
-        canvas, "${animation["units"][4]}", Offset(size.width * 0.107.h, size.height * 0.066.h),Color(0xff2C4D82));
-    final Rect destination5 = Rect.fromLTWH(
-        size.width * 0.1077.h, size.height * 0.053.h, 15.00, 15.00);
-    final Rect source5 =
-        Rect.fromLTWH(0, 0, image1!.width.toDouble(), image1!.height.toDouble());
-    canvas.drawImageRect(image1!, source5, destination5, Paint());
-    drawLeftToCenterLine(canvas, paint, size,paint1);
-    drawLeftToBottomLine(canvas, paint, size,paint1);
-    drawRightToBottomLine(canvas, paint, size,paint1);
-    
-  }
-  void drawLeftToBottomLine(Canvas canvas, Paint paint, Size size, Paint paint1){
-final p1 = Offset(size.width * 0.108.h, size.height * 0.074.h); //8
-    final p2 =Offset(size.width * 0.072.h, size.height * 0.112.h); //15
-   if (animation["genVatVal"] == 1) { //15
-    canvas.drawLine(
-      p1,
-      p2,
-      paint1,
-    );}else{
-      canvas.drawLine(
-      p1,
-      p2,
-      paint,
+    drawLeftToCenterLine(canvas, paint, paint1);
+    drawLeftToBottomLine(canvas, paint, paint1);
+    drawRightToBottomLine(canvas, paint, paint1);
+
+// -------------------- CENTER canvas ------------------
+    // Draw center circle
+    canvas.drawCircle(center, circleRadius, centerCirclePaint);
+    // Draw center circle text
+    drawCircleTextAndIcon(
+      canvas: canvas,
+      image: images['house'],
+      valueText: "${animation["values"][2]}",
+      unitText: "${animation["units"][2]}",
+      offset: center,
     );
+  }
+
+  void drawCircleTextAndIcon({
+    required Canvas canvas,
+    ui.Image? image,
+    String valueText = "",
+    String unitText = "",
+    required Offset offset,
+    Color color = Colors.white,
+  }) {
+    offset = offset + const Offset(-10, -5);
+
+    if (image != null) {
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..color = const Color(0xff2C4D82)
+        ..strokeWidth = 3;
+      canvas.drawImage(image, offset + const Offset(0, -20), paint);
+    }
+
+    // Round value to 2 decimal places
+    final numMiddleText = num.tryParse(valueText);
+    if (numMiddleText != null && numMiddleText is double) {
+      valueText = numMiddleText.toStringAsFixed(2);
+    }
+
+    final middleSpan = TextSpan(
+      style: TextStyle(color: color, fontSize: 10),
+      text: valueText,
+    );
+
+    final tp = TextPainter(
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+
+    tp.text = middleSpan;
+    tp.layout(minWidth: 70, maxWidth: 70);
+    tp.paint(canvas, offset + const Offset(-25, 7));
+
+    final bottomSpan = TextSpan(
+      style: TextStyle(color: color, fontSize: 10),
+      text: unitText,
+    );
+
+    tp.text = bottomSpan;
+    tp.layout(minWidth: 70, maxWidth: 70);
+    tp.paint(canvas, offset + const Offset(-25, 20));
+  }
+
+  void drawLeftToBottomLine(Canvas canvas, Paint paint, Paint paint1) {
+    final p1 = Offset(
+      center.dx - distanceFromCenterToSiteCircle,
+      center.dy + circleRadius,
+    );
+
+    final p2 = Offset(
+      center.dx - circleRadius,
+      center.dy + distanceFromCenterToSiteCircle,
+    );
+
+    if (animation["genVatVal"] == 1) {
+      //15
+      canvas.drawLine(p1, p2, paint1);
+    } else {
+      canvas.drawLine(p1, p2, paint);
     }
     if (animation["genVatVal"] == 1) {
       drawArrow(p1, p2, paint, canvas);
     }
-}
-  void drawRightToBottomLine(Canvas canvas, Paint paint, Size size, Paint paint1){
-final p1 = Offset(size.width * 0.011.h, size.height * 0.074.h); //8
-    final p2 =Offset(size.width * 0.048.h, size.height * 0.112.h); //15
-     if (animation["genGridVal"] == 1) { //15
-    canvas.drawLine(
-      p1,
-      p2,
-      paint1,
-    );}else{
-      canvas.drawLine(
-      p1,
-      p2,
-      paint,
+  }
+
+  void drawRightToBottomLine(Canvas canvas, Paint paint, Paint paint1) {
+    final p1 = Offset(
+      center.dx + distanceFromCenterToSiteCircle,
+      center.dy + circleRadius,
     );
+
+    final p2 = Offset(
+      center.dx + circleRadius,
+      center.dy + distanceFromCenterToSiteCircle,
+    );
+
+    if (animation["genGridVal"] == 1) {
+      //15
+      canvas.drawLine(p1, p2, paint1);
+    } else {
+      canvas.drawLine(p1, p2, paint);
     }
     if (animation["genGridVal"] == 1) {
       drawArrow(p1, p2, paint, canvas);
     }
-}
-void drawTopToLeftLine(Canvas canvas, Paint paint, Size size, Paint paint1){
-final p1 = Offset(size.width * 0.072.h, 6.0.h); //8
-    final p2 =Offset(size.width * 0.107.h, size.height * 0.052.h);
-     if (animation["SolarBatteryVal"] == 1) { //15
-    canvas.drawLine(
-      p1,
-      p2,
-      paint1,
-    );}else{
-      canvas.drawLine(
-      p1,
-      p2,
-      paint,
+  }
+
+  void drawTopToLeftLine(Canvas canvas, Paint paint, Paint paint1) {
+    final p1 = Offset(
+      center.dx - circleRadius,
+      center.dy - distanceFromCenterToSiteCircle,
     );
+
+    final p2 = Offset(
+      center.dx - distanceFromCenterToSiteCircle,
+      center.dy - circleRadius,
+    );
+
+    if (animation["SolarBatteryVal"] == 1) {
+      //15
+      canvas.drawLine(p1, p2, paint1);
+    } else {
+      canvas.drawLine(p1, p2, paint);
     }
     if (animation["SolarBatteryVal"] == 1) {
       drawArrow(p1, p2, paint, canvas);
     }
-}
-  void drawTopToRightLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
-    final p1 = Offset(size.width * 0.048.h, 6.0.h); //8
-    final p2 = Offset(size.width * 0.014.h, size.height * 0.052.h); //15
+  }
 
-    //  canvas.drawLine(Offset(0.0, 0.0), Offset(size.width - size.width * _progress, size.height - size.height * _progress), _paint);
-
-    // progress
-    //     .drive(Tween(begin: size.width * 0.046.h, end: size.width * 0.026.h));
-    // progress.forward();
- if (animation["solarGridVal"] == 1) {
-    canvas.drawLine(
-      p1,
-      p2,
-      paint1,
-    );}else{
-      canvas.drawLine(
-      p1,
-      p2,
-      paint,
+  void drawTopToRightLine(Canvas canvas, Paint paint, Paint paint1) {
+    final p1 = Offset(
+      center.dx + circleRadius,
+      center.dy - distanceFromCenterToSiteCircle,
     );
+
+    final p2 = Offset(
+      center.dx + distanceFromCenterToSiteCircle,
+      center.dy - circleRadius,
+    );
+
+    if (animation["solarGridVal"] == 1) {
+      canvas.drawLine(p1, p2, paint1);
+    } else {
+      canvas.drawLine(p1, p2, paint);
     }
     if (animation["solarGridVal"] == 1) {
       drawArrow(p1, p2, paint1, canvas);
     }
-
-    // final dX = p2.dx - p1.dx;
-    // final dY = p2.dy - p1.dy;
-    // final angle = math.atan2(dY, dX);
-    // final arrowSize = 15;
-    // final arrowAngle = 25 * math.pi / 180;
-    // final arrowHead = Path();
-    // arrowHead.moveTo(
-    //     p2.dx - (progress * (arrowSize * math.cos(angle - arrowAngle))),
-    //     p2.dy - arrowSize * math.sin(angle - arrowAngle));
-    // arrowHead.lineTo(p2.dx, p2.dy);
-    // arrowHead.lineTo(
-    //     p2.dx - (progress * (arrowSize * math.cos(angle + arrowAngle))),
-    //     p2.dy - arrowSize * math.sin(angle + arrowAngle));
-    // arrowHead.close();
-    // canvas.drawPath(arrowHead, paint);
   }
 
-  void drawLeftToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
-    if (animation["batteryVal"] == 1) {
-    canvas.drawLine(
-      Offset(size.width * 0.072.h, size.height * 0.065.h),
-      Offset(size.width * 0.098.h, size.height * 0.065.h),
-      paint1,
-    );}else{
-       canvas.drawLine(
-      Offset(size.width * 0.072.h, size.height * 0.065.h),
-      Offset(size.width * 0.098.h, size.height * 0.065.h),
-      paint,
+  void drawLeftToCenterLine(Canvas canvas, Paint paint, Paint paint1) {
+    final p1 = Offset(
+      center.dx - distanceFromCenterToSiteCircle + circleRadius,
+      center.dy,
     );
-    }
-    if (animation["batteryVal"] == 1) {
-      drawArrow( Offset(size.width * 0.072.h, size.height * 0.065.h),
-      Offset(size.width * 0.098.h, size.height * 0.065.h), paint1, canvas);
-    }
-  }
-drawTopToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
-    if (animation["solarVal"] == 1) {
-    canvas.drawLine(
-    Offset(size.width * 0.060.h, 9.3.h),
-      Offset(size.width * 0.060.h, 19.5.h),
-      paint1,
-    );}else{
-      canvas.drawLine(
-     Offset(size.width * 0.060.h, 9.3.h),
-      Offset(size.width * 0.060.h, 19.5.h),
-      paint,
-    );
-    }
-    if (animation["solarVal"] == 1) {
-      drawArrow( Offset(size.width * 0.060.h, 9.3.h),
-      Offset(size.width * 0.060.h, 19.5.h), paint1, canvas);
-    }
-  }
 
-  void drawRightToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
+    final p2 = Offset(center.dx, center.dy);
+
     if (animation["gridVal"] == 1) {
-    canvas.drawLine(
-      Offset(size.width * 0.024.h, size.height * 0.065.h),
-      Offset(size.width * 0.048.h, size.height * 0.065.h),
-      paint1,
-    );}else{
-      canvas.drawLine(
-      Offset(size.width * 0.024.h, size.height * 0.065.h),
-      Offset(size.width * 0.048.h, size.height * 0.065.h),
-      paint,
-    ); 
+      canvas.drawLine(p1, p2, paint1);
+    } else {
+      canvas.drawLine(p1, p2, paint);
     }
     if (animation["gridVal"] == 1) {
-      drawArrow( Offset(size.width * 0.024.h, size.height * 0.065.h),
-      Offset(size.width * 0.048.h, size.height * 0.065.h), paint1, canvas);
+      drawArrow(p1 + const Offset(10, 0), p2, paint1, canvas);
     }
   }
 
-  void drawBottomToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
-   if (animation["generatorVal"] == 1) {
-    canvas.drawLine(
-      Offset(size.width * 0.060.h, size.height * 0.1.h),
-      Offset(size.width * 0.060.h, size.height * 0.074.h),
-      paint1,
-    );}else{
-       canvas.drawLine(
-      Offset(size.width * 0.060.h, size.height * 0.1.h),
-      Offset(size.width * 0.060.h, size.height * 0.074.h),
-      paint,
+  void drawTopToCenterLine(Canvas canvas, Paint paint, Paint paint1) {
+    final p1 = Offset(
+      center.dx,
+      center.dy - distanceFromCenterToSiteCircle + circleRadius,
     );
+
+    final p2 = Offset(center.dx, center.dy);
+
+    if (animation["solarVal"] == 1) {
+      canvas.drawLine(p1, p2, paint1);
+    } else {
+      canvas.drawLine(p1, p2, paint);
+    }
+    if (animation["solarVal"] == 1) {
+      drawArrow(p1 + const Offset(0, 10), p2, paint1, canvas);
+    }
+  }
+
+  void drawRightToCenterLine(Canvas canvas, Paint paint, Paint paint1) {
+    final p1 = Offset(
+      center.dx + distanceFromCenterToSiteCircle - circleRadius,
+      center.dy,
+    );
+
+    final p2 = Offset(center.dx, center.dy);
+
+    if (animation["batteryVal"] == 1) {
+      canvas.drawLine(p1, p2, paint1);
+    } else {
+      canvas.drawLine(p1, p2, paint);
+    }
+    if (animation["batteryVal"] == 1) {
+      drawArrow(p1 + const Offset(-10, 0), p2, paint1, canvas);
+    }
+  }
+
+  void drawBottomToCenterLine(Canvas canvas, Paint paint, Paint paint1) {
+    final p1 = Offset(
+      center.dx,
+      center.dy + distanceFromCenterToSiteCircle - circleRadius,
+    );
+
+    final p2 = Offset(center.dx, center.dy);
+
+    if (animation["generatorVal"] == 1) {
+      canvas.drawLine(p1, p2, paint1);
+    } else {
+      canvas.drawLine(p1, p2, paint);
     }
     if (animation["generatorVal"] == 1) {
-      drawArrow(Offset(size.width * 0.060.h, size.height * 0.1.h),
-      Offset(size.width * 0.060.h, size.height * 0.074.h), paint1, canvas);
+      drawArrow(p1 + const Offset(0, -10), p2, paint1, canvas);
     }
-  }
-
-  void drawText(Canvas canvas, String data, Offset offset, Color color) {
-    TextSpan span =
-        new TextSpan(style: new TextStyle(color: color,fontSize: 12), text: data);
-    TextPainter tp = new TextPainter(
-        text: span,
-        textAlign: TextAlign.left,
-        textDirection: TextDirection.ltr);
-    tp.layout();
-    tp.paint(canvas, offset);
   }
 
   //reverse postion of p1 and p2 for arrow direction
@@ -411,8 +474,8 @@ drawTopToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
     final dX = p3.dx - p1.dx;
     final dY = p3.dy - p1.dy;
     final angle = math.atan2(dY, dX);
-    final arrowSize = 10;
-    final arrowAngle = 40 * math.pi / 180;
+    const arrowSize = 10;
+    const arrowAngle = 40 * math.pi / 180;
     final path = Path();
     // path.moveTo(25, 30);
 
@@ -449,4 +512,3 @@ drawTopToCenterLine(Canvas canvas, Paint paint, Size size, Paint paint1) {
     return oldDelegate.progress != progress;
   }
 }
-

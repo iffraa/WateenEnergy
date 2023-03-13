@@ -40,7 +40,7 @@ class _LineChartState extends State<LineChart> {
       lineSeries.add(
           LineSeries<InverterHourlyData, String>(
               name: "Inverter 02",
-              color: AppColors.lightBlue,
+              color: AppColors.yellow,
               dataSource: widget.chartData,
               xValueMapper: (InverterHourlyData data, _) => data.x,
               yValueMapper: (InverterHourlyData data, _) => data.y2)
@@ -85,7 +85,7 @@ class _LineChartState extends State<LineChart> {
               height: 0.8.h,
               width: 4.h,
               decoration: BoxDecoration(
-                  color: AppColors.lightBlue,
+                  color: AppColors.yellow,
                   borderRadius: BorderRadius.all(Radius.circular(1.h))),
             ),
             SizedBox(
@@ -124,7 +124,7 @@ class _LineChartState extends State<LineChart> {
                   yValueMapper: (InverterHourlyData data, _) => data.y1),
               LineSeries<InverterHourlyData, String>(
                   name: "Inverter 2",
-                  color: AppColors.lightBlue,
+                  color: AppColors.yellow,
                   dataSource: widget.chartData,
                   xValueMapper: (InverterHourlyData data, _) => data.x,
                   yValueMapper: (InverterHourlyData data, _) => data.y2)

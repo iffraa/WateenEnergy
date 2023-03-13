@@ -55,7 +55,7 @@ class _ReportingScreenState extends State<ReportingScreen> {
             color: AppColors.greyBg,
              height:  MediaQuery.of(context).size.height,
             padding:
-                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.15),
+                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.19),
             alignment: Alignment.topLeft,
             child: Column(
               mainAxisSize: MainAxisSize.max,

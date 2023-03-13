@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:wateen_energy/models/testenergy.dart';
@@ -14,6 +15,7 @@ import 'package:wateen_energy/widgets/pie_chart.dart';
 import '../services/network_api.dart';
 import '../services/service_url.dart';
 import '../utils/AppScale.dart';
+import '../utils/chart_visibility_cn.dart';
 import '../utils/colour.dart';
 import '../utils/strings.dart';
 import '../utils/user_table.dart';
@@ -83,28 +85,30 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Wrap(
-                                alignment: WrapAlignment.center,
-                                children: [
-                                  DropdownSpinner(
-                                      getDropdownData(snapshot, Strings.city),
-                                      Strings.city,
-                                      onCitySelected,false),
-                                  SizedBox(
-                                    width: 2.h,
-                                  ),
-                                  DropdownSpinner(
-                                      getDropdownData(snapshot, Strings.site),
-                                      Strings.site,
-                                      onSiteSelected,false),
-                                  SizedBox(
-                                    width: 2.h,
-                                  ),
-                                  DropdownSpinner(
-                                      getDropdownData(snapshot, Strings.region),
-                                      Strings.region,
-                                      onRegionSelected,false),
-                                ],
+                              SingleChildScrollView(
+                                child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  children: [
+                                    DropdownSpinner(
+                                        getDropdownData(snapshot, Strings.city),
+                                        Strings.city,
+                                        onCitySelected,false),
+                                    SizedBox(
+                                      width: 2.h,
+                                    ),
+                                    DropdownSpinner(
+                                        getDropdownData(snapshot, Strings.site),
+                                        Strings.site,
+                                        onSiteSelected,false),
+                                    SizedBox(
+                                      width: 2.h,
+                                    ),
+                                    DropdownSpinner(
+                                        getDropdownData(snapshot, Strings.region),
+                                        Strings.region,
+                                        onRegionSelected,false),
+                                  ],
+                                ),
                               ),
 
                               SingleChildScrollView(
@@ -127,7 +131,9 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.all(3.h),
+                         // padding: EdgeInsets.all(3.h),
+                          padding: EdgeInsets.only(right: 2.h,top: 2.h),
+
                           child: Column(
                             children: [
 
@@ -156,6 +162,13 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
     List prComparison = data["pr_comparison"];
     int length = prComparison.length;
     List<dynamic> labels = prComparison[length - 2];
+
+  /*  for(int i = 0; i < labels.length; i++) {
+      WidgetsBinding.instance.addPostFrameCallback((_){
+        Provider.of<ChartVisibilityCN>(context, listen: false).addLabel(labels[i].toString(), true);
+      });
+    }*/
+
     return labels;
   }
 
@@ -274,14 +287,14 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
   String region = "all";
 
   void getSolarOverview() async {
+    GetStorage box = GetStorage();
 
     Map<String, dynamic> postData = {
-      UserTableKeys.epcName: "EFC",
+      UserTableKeys.epcName: box.read(Strings.epcName),
       UserTableKeys.city: city,
       UserTableKeys.region: region,
     };
 
-    GetStorage box = GetStorage();
     Map<String, String> headers = {
       'Authorization': "JWT " + box.read(Strings.token),
      };
@@ -290,6 +303,7 @@ class _PerformanceScreenState extends State<PerformanceScreen> {
     futureData = NetworkAPI()
         .httpGetGraphData(ServiceUrl.perfOverviewUrl, headers, postData);
   }
+
 
   void onFailureAlert() {
     Navigator.of(context).pop(); // dismiss dialog

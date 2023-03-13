@@ -14,7 +14,10 @@ class GraphHeading extends StatelessWidget {
   Widget build(BuildContext context) {
     AppScale _scale = AppScale(context);
 
-    return Text(text,style:TextStyle(fontWeight: FontWeight.w700,fontSize: _scale.chartHeading),textAlign: TextAlign.start,);
+    return Padding(
+      padding: EdgeInsets.only(left: 2.h),
+      child: Text(text,style:TextStyle(fontWeight: FontWeight.w700,fontSize: _scale.chartHeading),textAlign: TextAlign.start,),
+    );
     ;
   }
 }

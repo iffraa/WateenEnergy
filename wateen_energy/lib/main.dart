@@ -1,4 +1,3 @@
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_storage/get_storage.dart';
@@ -6,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:wateen_energy/screens/SplashScreen.dart';
 import 'package:wateen_energy/screens/alarm_screen.dart';
+import 'package:wateen_energy/screens/critical_alarm_screen.dart';
 import 'package:wateen_energy/screens/filter_screen.dart';
 import 'package:wateen_energy/screens/oandm_screen.dart';
 import 'package:wateen_energy/screens/performance_screen.dart';
@@ -16,10 +17,10 @@ import 'package:wateen_energy/screens/site_detail_screen.dart';
 import 'package:wateen_energy/screens/site_screen.dart';
 import 'package:wateen_energy/utils/alarm_list_cn.dart';
 import 'package:wateen_energy/utils/bottom_nav_index_cn.dart';
+import 'package:wateen_energy/utils/chart_visibility_cn.dart';
 import 'package:wateen_energy/utils/site_list_cn.dart';
 import 'package:wateen_energy/utils/colour.dart';
 import 'package:wateen_energy/utils/strings.dart';
-import 'package:page_transition/page_transition.dart';
 
 Future<void> main() async {
   await GetStorage.init();
@@ -27,9 +28,8 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => BottomNavIndexCN()),
-        ChangeNotifierProvider<SiteListCN>(create: (_) => SiteListCN()),
-        ChangeNotifierProvider<AlarmListCN>(create: (_) => AlarmListCN()),
+        ChangeNotifierProvider(create: (context) => ChartVisibilityCN()),
+        ChangeNotifierProvider<BottomNavIndexCN>(create: (_) => BottomNavIndexCN()),
 
       ],
       child: const MyApp(),
@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
     return   ResponsiveSizer(
         builder: (context, orientation, screenType) {
           return MaterialApp(
-              title: 'Flutter Demo',
+              title: 'Enerlytics',
               theme: ThemeData(
                 textTheme: GoogleFonts.robotoTextTheme(
                   Theme
@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
                   primarySwatch: themeColor, accentColor: AppColors.darkBlue)
                   .copyWith(secondary: AppColors.darkBlue),
               ).copyWith(),
-              home: Builder(
+              home:SplashScreen()/* Builder(
                 builder: (context) {
                   return AnimatedSplashScreen(
                       duration: 3000,
@@ -90,7 +90,7 @@ class _MyAppState extends State<MyApp> {
                     //  backgroundColor: Colors.blue
                   );
                 }
-              )
+              )*/
          ,
               builder: EasyLoading.init(),
               routes: {
@@ -102,6 +102,7 @@ class _MyAppState extends State<MyApp> {
                 AlarmsScreen.routeName: (ctx) => AlarmsScreen(),
                 FilterScreen.routeName: (ctx) => FilterScreen(),
                 ReportingScreen.routeName: (ctx) => ReportingScreen(),
+                CriticalAlarmScreen.routeName: (ctx) => CriticalAlarmScreen(),
 
               },
               localizationsDelegates: [

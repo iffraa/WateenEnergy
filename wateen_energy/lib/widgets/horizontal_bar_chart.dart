@@ -63,6 +63,7 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
           ],
         ),
         SfCartesianChart(
+
             tooltipBehavior: _tooltipBehavior,
             enableAxisAnimation: true,
             zoomPanBehavior: _zoomPanBehavior,
@@ -77,12 +78,15 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
             ),
             series: <ChartSeries>[
               StackedBarSeries<CityData, String>(
-                name: "Performance Ratio",
+                  borderRadius: BorderRadius.only(topRight: Radius.circular(2.h), bottomRight: Radius.circular(2.h))
+                  ,
+                  name: "Performance Ratio",
                   color: AppColors.darkBlue,
                  // dataLabelSettings: DataLabelSettings(isVisible: true),
                   dataSource: widget.chartData,
                   xValueMapper: (CityData data, _) => data.x,
                   yValueMapper: (CityData data, _) => data.y),
+
             ]),
       ],
     );

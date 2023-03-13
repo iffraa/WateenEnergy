@@ -19,6 +19,7 @@ class SiteItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppScale _scale = AppScale(context);
+    final borderRadius = BorderRadius.circular(20); // Image border
 
     return Padding(
       padding: EdgeInsets.only(bottom: 0.9.h),
@@ -38,10 +39,11 @@ class SiteItem extends StatelessWidget {
                 Row(
                   children: [
                     Image.asset(
-                      'assets/images/siteitem.png',
+                      'assets/images/alarmitem.png',
                       width: 8.h,
                       height: 8.h,
                     ),
+
                     SizedBox(
                       width: 1.h,
                     ),
@@ -55,8 +57,7 @@ class SiteItem extends StatelessWidget {
                                 fontSize: _scale.normalTxt,
                                 color: Colors.black,
                               )),
-                          //Spacer(),
-                          SizedBox(width: 4.h,),
+                          Spacer(),
                           Align(
                             alignment: Alignment.topRight,
                             child: Container(

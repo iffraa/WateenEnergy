@@ -1,6 +1,7 @@
 class ServiceUrl{
   static const String baseUrl  = "https://fsel.enerlyticslab.com/";
 
+  static const String profileInfoUrl = "auth/users/me/";
   static const String loginUrl = "auth/jwt/create/";
   static const String perfOverviewUrl = "performance/solar-overview/";
   static const String perfSolarSiteUrl = "performance/solar-site/";
@@ -13,7 +14,7 @@ class ServiceUrl{
   static const String energyYearlyUrl = "performance/solar-year/?";
   static const String energyDateUrl = "performance/solar-times/";
   static const String getReportUrl = "performance/report";
-  static const String visitorsListUrl = "customer/invite/visitors?";
+  static const String resetPwdUrl = "auth/users/reset_password/";
   static const String totalVisitorsUrl = "customer/guest/invite/visitor?";
   static const String visitorIssueTicketUrl = "customer/issue/daily/visitor/ticket/";
   static const String forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?";

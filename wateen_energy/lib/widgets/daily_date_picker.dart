@@ -58,7 +58,7 @@ class _DailyDatePickerState extends State<DailyDatePicker> {
       child: Text(
         textAlign: TextAlign.center,
         startDate.toString().split(" ")[0],
-        style: TextStyle(color: Colors.black, fontSize: _scale.axisHeading),
+        style: TextStyle(color: Colors.black, fontSize:  13.px),
       ),
     );
   }

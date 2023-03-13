@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:wateen_energy/services/service_url.dart';
 import 'package:wateen_energy/widgets/form_button.dart';
@@ -52,152 +53,156 @@ class _ReportDialogState extends State<ReportDialog> {
           if (snapshot.hasData) {
             EasyLoading.dismiss();
 
-            return Container(
-              margin:
-                  EdgeInsets.only(top: 9.h, bottom: 9.h, left: 7.h, right: 7.h),
-              padding: EdgeInsets.all(3.h),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(1.h))),
-              //   padding: EdgeInsets.all(0.5.h),
-              child: Column(
-                children: [
-                  Text(
-                    textAlign: TextAlign.center,
-                    "Reports",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: _scale.heading,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(1.h),
-                    decoration: BoxDecoration(
-                        color: AppColors.greyBg,
-                        borderRadius: BorderRadius.all(Radius.circular(1.h))),
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: 9.h,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          "Report Type:",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: _scale.chartHeading,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 1.h,
-                        ),
-                        Text(
-                          widget.reportType,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: _scale.chartHeading,
+            return SingleChildScrollView(
+              child: Container(
+                margin:
+                    EdgeInsets.only(top: 9.h, bottom: 9.h, left: 7.h, right: 7.h),
+                padding: EdgeInsets.all(3.h),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(1.h))),
+                //   padding: EdgeInsets.all(0.5.h),
+                child: Column(
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      "Reports",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: _scale.heading,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(1.h),
+                      decoration: BoxDecoration(
+                          color: AppColors.greyBg,
+                          borderRadius: BorderRadius.all(Radius.circular(1.h))),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: 9.h,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            "Report Type:",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: _scale.chartHeading,
+                                fontWeight: FontWeight.bold),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(1.h),
-                    decoration: BoxDecoration(
-                        color: AppColors.greyBg,
-                        borderRadius: BorderRadius.all(Radius.circular(1.h))),
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: 9.h,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          "Select Site:",
-                          style: TextStyle(
+                          SizedBox(
+                            height: 1.h,
+                          ),
+                          Text(
+                            widget.reportType,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
                               color: Colors.black,
                               fontSize: _scale.chartHeading,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 1.h,
-                        ),
-                        DropdownSpinner(getSiteNames(snapshot.data!),
-                            Strings.site, onSiteSelected,true),
-                      ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(1.h),
-                    decoration: BoxDecoration(
-                        color: AppColors.greyBg,
-                        borderRadius: BorderRadius.all(Radius.circular(1.h))),
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: 9.h,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      //  mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          "Report Format:",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: _scale.chartHeading,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Expanded(child: FormatRadioGroup()),
-                      ],
+                    SizedBox(
+                      height: 2.h,
                     ),
-                  ),
-                  SizedBox(
-                    height: 2.h,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(1.h),
-                    decoration: BoxDecoration(
-                        color: AppColors.greyBg,
-                        borderRadius: BorderRadius.all(Radius.circular(1.h))),
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: widget.reportType.contains("Weekly") ? 20.h : 9.h,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      //  mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          "Time Period:",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: _scale.chartHeading,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 1.h,
-                        ),
-                        widget.reportType.contains("Daily") ? DailyDatePicker(onDateSelected) :
-                        widget.reportType.contains("Monthly")? MonthYearPicker(onDateSelected) :
-                        widget.reportType.contains("Weekly")? WeekDatePicker(onDateSelected) :
-                        DropdownSpinner(getYears()!, "Year", onYearSelected, true),
-                      ],
+                    Container(
+                      padding: EdgeInsets.all(1.h),
+                      decoration: BoxDecoration(
+                          color: AppColors.greyBg,
+                          borderRadius: BorderRadius.all(Radius.circular(1.h))),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: 9.h,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            "Select Site:",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: _scale.chartHeading,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 1.h,
+                          ),
+                          Expanded(
+                            child: DropdownSpinner(getSiteNames(snapshot.data!),
+                                Strings.site, onSiteSelected,true),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  NavButton("Go", onButtonClick)
-                ],
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(1.h),
+                      decoration: BoxDecoration(
+                          color: AppColors.greyBg,
+                          borderRadius: BorderRadius.all(Radius.circular(1.h))),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: 9.h,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        //  mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            "Report Format:",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: _scale.chartHeading,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Expanded(child: FormatRadioGroup()),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 2.h,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(1.h),
+                      decoration: BoxDecoration(
+                          color: AppColors.greyBg,
+                          borderRadius: BorderRadius.all(Radius.circular(1.h))),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: widget.reportType.contains("Weekly") ? 20.h : 9.h,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        //  mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            "Time Period:",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: _scale.chartHeading,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 1.h,
+                          ),
+                          widget.reportType.contains("Daily") ? DailyDatePicker(onDateSelected) :
+                          widget.reportType.contains("Monthly")? MonthYearPicker(onDateSelected) :
+                          widget.reportType.contains("Weekly")? WeekDatePicker(onDateSelected) :
+                          DropdownSpinner(getYears()!, "Year", onYearSelected, true),
+                        ],
+                      ),
+                    ),
+                    NavButton("Go", onButtonClick)
+                  ],
+                ),
               ),
             );
           } else {
@@ -243,10 +248,12 @@ class _ReportDialogState extends State<ReportDialog> {
     };
 
     print(params);
-    Map<String, String> headers = {
-      'Content-Type': 'application/pdf',
-      'Accept': 'application/pdf'
+    GetStorage box = GetStorage();
 
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+    'Authorization': "JWT " + box.read(Strings.token),
+      'Referer': 'https://fsel.enerlyticslab.com',
     };
 
     EasyLoading.show();
@@ -289,8 +296,9 @@ class _ReportDialogState extends State<ReportDialog> {
   }
 
   void getSites() async {
+    GetStorage box = GetStorage();
     Map<String, String> headers = {
-      //   'Authorization': "Bearer " + box.read("token"),
+      'Authorization': "JWT " + box.read(Strings.token),
     };
 
     Map<String, String> params = {
@@ -299,7 +307,7 @@ class _ReportDialogState extends State<ReportDialog> {
 
     try {
       futureSites =
-          NetworkAPI().httpGetGraphData(ServiceUrl.getSitesUrl, null, params);
+          NetworkAPI().httpGetGraphData(ServiceUrl.getSitesUrl, headers, params);
     } catch (e) {
       Utility.showSubmitAlert(context, Strings.noRecordTxt, "", null);
     }

@@ -20,8 +20,8 @@ class TotalDataContainer extends StatelessWidget {
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(1.h))),
-      width: 10.h,
-      height: 11.h,
+      width: 10.2.h,
+      height: 11.4.h,
       padding: EdgeInsets.all(0.3.h),
       margin: EdgeInsets.only(top: 2.h),
       child: Column(

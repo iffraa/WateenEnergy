@@ -22,63 +22,68 @@ class ContractorItem extends StatelessWidget {
   Widget build(BuildContext context) {
     AppScale _scale = AppScale(context);
 
-    return Padding(
-      padding: EdgeInsets.only(
-        top: 0.1.h,
-      ),
-      child: InkWell(
-        onTap: () {},
-        child: Container(
-            padding: EdgeInsets.only(left: 2.h, right: 2.h),
-            color: Colors.white,
-            height: 8.h,
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(data.name,
+    return InkWell(
+      onTap: () {},
+      child: Container(
+          padding: EdgeInsets.only(left: 2.h, right: 2.h),
+          color: Colors.white,
+          height: 8.h,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 7.2.h,
+                child: Text(data.name,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: _scale.normalTxt,
                       color: AppColors.blueText,
                     )),
-                RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: data.rank.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500, color: Colors.black)),
-                    WidgetSpan(
-                      child: Transform.translate(
-                        offset: const Offset(2, -4),
-                        child: Text(
-                          getRankText(data.rank),
-                          //superscript is usually smaller in size
-                          textScaleFactor: 0.7,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    TextSpan(
-                        text: "  Position",
+              ),
+              Text(data.rank.toString(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: _scale.normalTxt,
+                    color: AppColors.blueText,
+                  )),
+
+              /* RichText(
+                text: TextSpan(children: [
+                  TextSpan(
+                      text: data.rank.toString(),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500, color: Colors.black)),
+                  WidgetSpan(
+                    child: Transform.translate(
+                      offset: const Offset(2, -4),
+                      child: Text(
+                        getRankText(data.rank),
+                        //superscript is usually smaller in size
+                        textScaleFactor: 0.7,
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w600,
-                        )),
-                  ]),
-                ),
-                Text(data.score.toString(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: _scale.normalTxt,
-                      color: AppColors.blueText,
-                    )),
-              ],
-            )),
-      ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextSpan(
+                      text: "  Position",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      )),
+                ]),
+              ),*/
+              Text(data.score.toString(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: _scale.normalTxt,
+                    color: AppColors.blueText,
+                  )),
+            ],
+          )),
     );
   }
 

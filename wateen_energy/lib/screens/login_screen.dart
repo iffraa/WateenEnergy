@@ -9,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_widget/google_maps_widget.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:wateen_energy/screens/alarm_screen.dart';
 import 'package:wateen_energy/screens/logout_screen.dart';
 import 'package:wateen_energy/screens/performance_screen.dart';
 import '../services/network_api.dart';
@@ -70,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           child: Padding(
-            padding: EdgeInsets.only(left: 3.w, right: 3.w,top: 3.h),
+            padding: EdgeInsets.only(left: 3.w, right: 3.w,top: 6.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -178,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
           box.write(Strings.loginChk, true);
           box.write(Strings.token, response["access"]);
           print("access"+ response["access"]);
-          navigate();
+          getUserInfo();
         } else {
           Utility.showSubmitAlert(
               context, response["detail"], Strings.appNameTxt, onFailureAlert);
@@ -204,16 +205,53 @@ class _LoginScreenState extends State<LoginScreen> {
     GetStorage().write(Strings.userData, user);*/
   }
 
-  void navigate() {
+  void navigate(int userType) {
     Navigator.pop(context);
-    Navigator.of(context).pushNamed(PerformanceScreen.routeName);
+    if(userType == 2)
+      Navigator.of(context).pushNamed(PerformanceScreen.routeName);
+    else
+      Navigator.of(context).pushNamed(AlarmsScreen.routeName);
+
   }
 
   void onFailureAlert() {
     Navigator.of(context).pop(); // dismiss dialog
   }
 
-  /// Request the  permission and updates the UI accordingly
+  void getUserInfo() async {
+
+    GetStorage box = GetStorage();
+    Map<String, String> headers = {
+      'Authorization': "JWT " + box.read(Strings.token),
+    };
+
+    NetworkAPI().httpGetRequest(ServiceUrl.profileInfoUrl, headers,
+            (error, response) {
+          if (response != null) {
+            print("user info");
+            print(response);
+            if (!error) {
+              box.write(Strings.userName, response['first_name'] + " " + response['last_name']);
+              box.write(Strings.userEmail, response['email']);
+              box.write(Strings.epcName, response['epc_name']);
+              box.write(UserTableKeys.userType, response['user_type']);
+              navigate(response['user_type']);
+
+            } else {
+              print("ERROR");
+
+              // Utility.showSubmitAlert(context, response["detail"], Strings.appNameTxt, onFailureAlert);
+            }
+          } else {
+            // Utility.showSubmitAlert(context, "Please try again later", "", onFailureAlert);
+          }
+          EasyLoading.dismiss();
+        });
+  }
+
+
+
+/// Request the  permission and updates the UI accordingly
 /* Future<bool> requestLocPermission() async {
     PermissionStatus result;
     // In Android we need to request the storage permission,
